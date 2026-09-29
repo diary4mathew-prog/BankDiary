@@ -24,6 +24,8 @@
   --accent-2: #a8384a;
   --green: #3d5a30;
   --amber: #a87b1f;
+  --red: #8b2635;
+  --blue: #2e5c8a;
   --shadow: rgba(74, 53, 24, 0.12);
 }
 * { box-sizing: border-box; }
@@ -61,6 +63,10 @@ body {
 }
 .entry-card.snoozed {
   border-left-color: var(--amber);
+  background: var(--paper-card-2);
+}
+.entry-card.cust-pending {
+  border-left-color: var(--blue);
   background: var(--paper-card-2);
 }
 
@@ -129,6 +135,10 @@ body {
   transition: all 0.15s ease;
   border-radius: 2px; font-size: 14px;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 .btn:hover { background: var(--ink); color: var(--paper); }
 .btn:active { transform: translateY(1px); }
@@ -137,6 +147,8 @@ body {
 .btn-ghost { border-color: transparent; background: transparent; }
 .btn-ghost:hover { background: var(--rule-soft); color: var(--ink); border-color: transparent; }
 .btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-danger { border-color: var(--red); color: var(--red); }
+.btn-danger:hover { background: var(--red); color: var(--paper); }
 
 input, select, textarea {
   font-family: 'Newsreader', serif;
@@ -165,7 +177,7 @@ input[type="date"], input[type="time"] {
 .date-stamp {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 2px 8px;
-  border: 1.5px solid var(--accent);
+  border: 1.5px solid currentColor;
   color: var(--accent);
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px; letter-spacing: 0.08em;
@@ -173,6 +185,15 @@ input[type="date"], input[type="time"] {
   transform: rotate(-1.2deg);
   font-weight: 600;
   background: rgba(255, 247, 230, 0.5);
+  transition: color 0.3s ease;
+}
+.date-stamp.aging-amber { color: var(--amber); border-color: var(--amber); }
+.date-stamp.aging-red { color: var(--red); border-color: var(--red); animation: pulse-red 2s infinite; }
+.date-stamp.aging-blue { color: var(--blue); border-color: var(--blue); }
+
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 
 .toast {
@@ -195,6 +216,17 @@ input[type="date"], input[type="time"] {
   background: rgba(168, 123, 31, 0.15);
   border: 1px solid var(--amber);
   color: var(--amber);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; border-radius: 2px;
+  font-weight: 600; letter-spacing: 0.04em;
+}
+
+.pending-cust-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px;
+  background: rgba(46, 92, 138, 0.15);
+  border: 1px solid var(--blue);
+  color: var(--blue);
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px; border-radius: 2px;
   font-weight: 600; letter-spacing: 0.04em;
@@ -317,27 +349,28 @@ input::placeholder, textarea::placeholder {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 600; color: var(--accent); font-size: 11px;
 }
-
 .assignee-chip .remove {
-  cursor: pointer;
-  color: var(--ink-muted);
-  margin-left: 2px;
-  font-size: 14px;
-  line-height: 1;
-  padding: 0 2px;
-  border-radius: 50%;
+  cursor: pointer; color: var(--ink-muted); margin-left: 2px;
+  font-size: 14px; line-height: 1; padding: 0 2px; border-radius: 50%;
 }
 .assignee-chip .remove:hover { color: var(--accent); }
 
 .assignee-empty {
-  font-style: italic;
-  color: var(--ink-muted);
-  font-size: 13px;
-  padding: 8px 4px;
-  line-height: 1.6;
+  font-style: italic; color: var(--ink-muted);
+  font-size: 13px; padding: 8px 4px; line-height: 1.6;
 }
 
 .divider-dashed { border-top: 1px dashed var(--rule); }
+
+.phone-link {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 6px;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.phone-link:hover { opacity: 1; text-decoration: underline; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -365,11 +398,12 @@ input::placeholder, textarea::placeholder {
         <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--ink-muted)]">Today</span>
         <span id="todayDate" class="font-display font-medium text-[var(--ink)]"></span>
       </div>
-      <button id="exportBtn" class="btn btn-ghost btn-sm hidden sm:inline-block">Export</button>
+      <button id="exportBtn" class="btn btn-ghost btn-sm hidden sm:inline-flex">Export</button>
     </div>
   </div>
   <div class="max-w-7xl mx-auto px-4 md:px-6 flex border-b border-[var(--rule)] overflow-x-auto">
     <button class="tab-btn active" data-tab="live">Live<span class="count" id="liveCount">0</span></button>
+    <button class="tab-btn" data-tab="cust_pending">Cust-Pending<span class="count" id="pendingCustCount">0</span></button>
     <button class="tab-btn" data-tab="snoozed">Snoozed<span class="count" id="snoozedCount">0</span></button>
     <button class="tab-btn" data-tab="cancelled">Cancelled<span class="count" id="cancelledCount">0</span></button>
   </div>
@@ -397,6 +431,7 @@ input::placeholder, textarea::placeholder {
       <h2 class="font-display text-lg font-bold mb-3">At a Glance</h2>
       <div class="space-y-1">
         <div class="stat-row"><span class="label">Live entries</span><span class="value" id="statLive">0</span></div>
+        <div class="stat-row"><span class="label">Cust-Pending</span><span class="value" id="statPendingCust">0</span></div>
         <div class="stat-row"><span class="label">Snoozed</span><span class="value" id="statSnoozed">0</span></div>
         <div class="stat-row"><span class="label">Cancelled</span><span class="value" id="statCancelled">0</span></div>
         <div class="stat-row" style="border-top: 1px solid var(--rule); border-bottom: none; padding-top: 10px; margin-top: 6px;">
@@ -404,6 +439,14 @@ input::placeholder, textarea::placeholder {
           <span class="value text-[var(--accent)]" id="statAssigned" style="font-size: 18px;">0</span>
         </div>
       </div>
+    </section>
+
+    <section class="sidebar-section">
+      <h2 class="font-display text-lg font-bold mb-3">Backup & Cleanup</h2>
+      <p class="text-xs text-[var(--ink-muted)] mb-3 italic leading-relaxed">
+        Send all cancelled (completed) entries to your email as a backup text file, then clear them from the diary.
+      </p>
+      <button id="emailBackupBtn" class="btn w-full mb-2">Send Email & Clear</button>
     </section>
 
     <section class="sidebar-section">
@@ -431,6 +474,7 @@ input::placeholder, textarea::placeholder {
 
 <div class="corner-stamp">Branch Copy</div>
 
+<!-- Snooze Modal -->
 <div class="modal-backdrop" id="snoozeModal">
   <div class="modal-card p-6">
     <div class="flex items-start justify-between mb-1">
@@ -465,6 +509,28 @@ input::placeholder, textarea::placeholder {
   </div>
 </div>
 
+<!-- Cust-Pending Modal -->
+<div class="modal-backdrop" id="pendingCustModal">
+  <div class="modal-card p-6">
+    <div class="flex items-start justify-between mb-1">
+      <h3 class="font-display text-xl font-bold">Move to Cust-Pending</h3>
+      <button class="btn btn-ghost btn-sm" id="pendingCustCloseBtn" style="padding: 4px 10px;">✕</button>
+    </div>
+    <p class="text-sm text-[var(--ink-soft)] mb-4" id="pendingCustEntryPreview"></p>
+    <div class="space-y-3">
+      <div>
+        <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">What are you waiting for?</label>
+        <input type="text" id="pendingCustNote" placeholder="e.g. KYC Form, Signature, Cheque Leaf">
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-5">
+      <button class="btn" id="pendingCustCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="pendingCustConfirmBtn" style="background: var(--blue); border-color: var(--blue);">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assignee Modal -->
 <div class="modal-backdrop" id="assigneeModal">
   <div class="modal-card p-6">
     <div class="flex items-start justify-between mb-4">
@@ -482,12 +548,22 @@ input::placeholder, textarea::placeholder {
   </div>
 </div>
 
+<!-- Confirm Modal -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal-card p-6">
+    <h3 class="font-display text-xl font-bold mb-2" id="confirmTitle">Are you sure?</h3>
+    <p class="text-sm text-[var(--ink-soft)] mb-5" id="confirmMessage"></p>
+    <div class="flex justify-end gap-2">
+      <button class="btn" id="confirmCancelBtn">Cancel</button>
+      <button class="btn btn-danger" id="confirmAcceptBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 // ===== State =====
-// Only "Unassigned" is preset — the system default for new entries.
-// The user adds their own team members via the + Add button.
 let state = {
   entries: [],
   assignees: ['Unassigned'],
@@ -500,23 +576,25 @@ const STATUSES = ['Pending', 'In Progress', 'Follow-up Required', 'Awaiting Docs
 
 // ===== Persistence =====
 function save() {
-  localStorage.setItem('branch_diary_v1', JSON.stringify(state));
+  localStorage.setItem('branch_diary_v3', JSON.stringify(state));
 }
 function load() {
   try {
-    const raw = localStorage.getItem('branch_diary_v1');
+    const raw = localStorage.getItem('branch_diary_v3');
     if (raw) {
       const data = JSON.parse(raw);
       state = { ...state, ...data };
-      if (!state.assignees || state.assignees.length === 0) {
-        state.assignees = ['Unassigned'];
-      }
-      // Always make sure "Unassigned" exists in the list
-      if (!state.assignees.includes('Unassigned')) {
-        state.assignees.unshift('Unassigned');
-      }
+      if (!state.assignees || state.assignees.length === 0) state.assignees = ['Unassigned'];
+      if (!state.assignees.includes('Unassigned')) state.assignees.unshift('Unassigned');
       if (!state.entries) state.entries = [];
     } else {
+      // Try migrating from v2
+      const v2raw = localStorage.getItem('branch_diary_v2');
+      if (v2raw) {
+        localStorage.setItem('branch_diary_v3', v2raw);
+        load();
+        return;
+      }
       addSampleData();
     }
   } catch (e) { console.warn('Load failed', e); }
@@ -524,35 +602,38 @@ function load() {
 
 function addSampleData() {
   const now = Date.now();
-  // Sample uses "Unassigned" only — no fake team members.
   state.entries = [
     { id: 'e_s1', customerId: '1042', accountNumber: '452110', name: 'Rajesh Kumar', phoneNumber: '9876543210',
       remarks: 'KYC documents pending - customer to submit address proof',
       dateEntered: new Date(now - 3600000).toISOString(),
       assignedTo: 'Unassigned', assignedDate: new Date(now - 3600000).toISOString().slice(0, 10),
-      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null },
+      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '' },
     { id: 'e_s2', customerId: '2078', accountNumber: '771032', name: 'Sunita Devi', phoneNumber: '9811022334',
       remarks: 'Cheque clearance pending - branch visit required for signature verification',
-      dateEntered: new Date(now - 7200000).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 7200000).toISOString().slice(0, 10),
-      status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null },
+      dateEntered: new Date(now - 86400000 * 4).toISOString(),
+      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 4).toISOString().slice(0, 10),
+      status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '' },
     { id: 'e_s3', customerId: '3301', accountNumber: '882544', name: 'Mohan Lal', phoneNumber: '9001122334',
       remarks: 'Loan document verification - income proof submitted',
-      dateEntered: new Date(now - 86400000).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000).toISOString().slice(0, 10),
-      status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true,
-      cancelledAt: new Date(now - 82800000).toISOString() },
-    { id: 'e_s4', customerId: '5120', accountNumber: '991023', name: 'Geeta Verma', phoneNumber: '9445566778',
-      remarks: 'Fixed deposit maturity - advise customer on reinvestment options',
-      dateEntered: new Date(now - 1800000).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 1800000).toISOString().slice(0, 10),
-      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null },
+      dateEntered: new Date(now - 86400000 * 8).toISOString(),
+      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 8).toISOString().slice(0, 10),
+      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '' },
+    { id: 'e_s4', customerId: '6789', accountNumber: '554433', name: 'Amit Patel', phoneNumber: '9988776655',
+      remarks: 'Home loan inquiry - sent interest rate details',
+      dateEntered: new Date(now - 86400000 * 2).toISOString(),
+      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 2).toISOString().slice(0, 10),
+      status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true, cancelledAt: new Date(now - 86400000).toISOString(), pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '' },
+    { id: 'e_s5', customerId: '9012', accountNumber: '112233', name: 'Sneha Gupta', phoneNumber: '9876501234',
+      remarks: 'Awaiting signature on loan form',
+      dateEntered: new Date(now - 86400000 * 1).toISOString(),
+      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 1).toISOString().slice(0, 10),
+      status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, 
+      pendingCustomer: true, pendingCustomerDate: new Date(now - 3600000 * 5).toISOString(), pendingCustomerNote: 'Signed Form 60' },
   ];
   save();
 }
 
 // ===== Parser =====
-// Format: "1111 222222 name 33333 remarks"
 function parseLine(line) {
   const trimmed = line.trim();
   if (!trimmed) return null;
@@ -612,19 +693,13 @@ function addEntries(parsedList) {
       snoozeNote: '',
       cancelled: false,
       cancelledAt: null,
+      pendingCustomer: false,
+      pendingCustomerDate: null,
+      pendingCustomerNote: ''
     });
   }
   save();
   render();
-}
-
-function updateEntry(id, patch) {
-  const e = state.entries.find(x => x.id === id);
-  if (e) {
-    Object.assign(e, patch);
-    save();
-    render();
-  }
 }
 
 function cancelEntry(id) {
@@ -633,6 +708,10 @@ function cancelEntry(id) {
     e.cancelled = true;
     e.cancelledAt = new Date().toISOString();
     e.status = 'Resolved';
+    e.snoozedUntil = null;
+    e.snoozeNote = '';
+    e.pendingCustomer = false;
+    e.pendingCustomerNote = '';
     save();
     render();
     showToast('Entry marked complete — moved to Cancelled');
@@ -646,6 +725,8 @@ function restoreEntry(id) {
     e.cancelledAt = null;
     e.snoozedUntil = null;
     e.snoozeNote = '';
+    e.pendingCustomer = false;
+    e.pendingCustomerNote = '';
     e.status = 'Pending';
     save();
     render();
@@ -676,17 +757,97 @@ function snoozeEntry(id, until, note) {
   if (e) {
     e.snoozedUntil = until.toISOString();
     e.snoozeNote = note;
+    e.pendingCustomer = false; // Cannot be snoozed and pending customer
     save();
     render();
     showToast('Snoozed until ' + formatDateTime(until));
   }
 }
 
+function moveToCustomerPending(id, note) {
+  const e = state.entries.find(x => x.id === id);
+  if (e) {
+    e.pendingCustomer = true;
+    e.pendingCustomerDate = new Date().toISOString();
+    e.pendingCustomerNote = note;
+    e.snoozedUntil = null; // Clear snooze if moved to customer
+    save();
+    render();
+    showToast('Moved to Cust-Pending');
+  }
+}
+
+function restoreFromCustomerPending(id) {
+  const e = state.entries.find(x => x.id === id);
+  if (e) {
+    e.pendingCustomer = false;
+    e.pendingCustomerNote = '';
+    save();
+    render();
+    showToast('Followed up — returned to Live');
+  }
+}
+
+function clearCancelledEntries() {
+  const count = state.entries.filter(e => e.cancelled).length;
+  if (count === 0) {
+    showToast('No cancelled entries to clear.');
+    return;
+  }
+  
+  sendEmailBackup(true);
+  
+  showConfirmModal(
+    'Clear Cancelled Entries?',
+    `${count} cancelled entr${count === 1 ? 'y' : 'ies'} will be permanently deleted from the diary. Make sure your email has been sent.`,
+    'Clear Entries',
+    () => {
+      state.entries = state.entries.filter(e => !e.cancelled);
+      save();
+      render();
+      showToast(`${count} cancelled entr${count === 1 ? 'y' : 'ies'} cleared.`);
+    }
+  );
+}
+
+function sendEmailBackup(silent = false) {
+  const cancelled = state.entries.filter(e => e.cancelled);
+  if (cancelled.length === 0) {
+    if (!silent) showToast('No cancelled entries to backup.');
+    return;
+  }
+
+  let body = `BRANCH DIARY BACKUP - ${formatDate(new Date())}\n\n--- COMPLETED/CANCELLED ENTRIES ---\n\n`;
+  cancelled.forEach((e, i) => {
+    body += `${i + 1}. ${e.name.toUpperCase()}\n`;
+    body += `   Customer ID: ${e.customerId}\n`;
+    body += `   Account No.: ${e.accountNumber}\n`;
+    body += `   Phone: ${e.phoneNumber}\n`;
+    body += `   Remarks: ${e.remarks || 'N/A'}\n`;
+    body += `   Assigned To: ${e.assignedTo}\n`;
+    body += `   Status: ${e.status}\n`;
+    body += `   Date Entered: ${formatDate(new Date(e.dateEntered))}\n`;
+    body += `   Date Cancelled: ${formatDateTime(new Date(e.cancelledAt))}\n\n`;
+  });
+
+  const subject = `Branch Diary Backup - ${formatDate(new Date())}`;
+  const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  
+  const a = document.createElement('a');
+  a.href = mailtoLink;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  if (!silent) showToast('Email app opened with backup text.');
+}
+
 function checkAndWakeUp() {
   const now = new Date();
   let woken = 0;
   for (const e of state.entries) {
-    if (e.snoozedUntil && !e.cancelled) {
+    if (e.snoozedUntil && !e.cancelled && !e.pendingCustomer) {
       if (new Date(e.snoozedUntil) <= now) {
         e.snoozedUntil = null;
         e.snoozeNote = '';
@@ -718,7 +879,6 @@ function removeAssignee(name) {
     showToast('Cannot remove "Unassigned"');
     return;
   }
-  // Reassign any entries that had this person back to "Unassigned"
   let reassigned = 0;
   for (const e of state.entries) {
     if (e.assignedTo === name) {
@@ -730,13 +890,14 @@ function removeAssignee(name) {
   if (state.filterAssignee === name) state.filterAssignee = 'all';
   save();
   render();
-  showToast('Removed ' + name + (reassigned > 0 ? ' (' + reassigned + ' entr' + (reassigned === 1 ? 'y' : 'ies') + ' moved to Unassigned)' : ''));
+  showToast('Removed ' + name + (reassigned > 0 ? ` (${reassigned} entr${reassigned === 1 ? 'y' : 'ies'} moved to Unassigned)` : ''));
 }
 
 // ===== Filtering =====
 function isVisible(entry, tab) {
-  if (tab === 'live') return !entry.cancelled && !entry.snoozedUntil;
-  if (tab === 'snoozed') return !entry.cancelled && entry.snoozedUntil;
+  if (tab === 'live') return !entry.cancelled && !entry.snoozedUntil && !entry.pendingCustomer;
+  if (tab === 'cust_pending') return !entry.cancelled && entry.pendingCustomer;
+  if (tab === 'snoozed') return !entry.cancelled && entry.snoozedUntil && !entry.pendingCustomer;
   if (tab === 'cancelled') return entry.cancelled;
   return false;
 }
@@ -761,6 +922,8 @@ function getFilteredEntries() {
     list.sort((a, b) => new Date(b.cancelledAt) - new Date(a.cancelledAt));
   } else if (state.currentTab === 'snoozed') {
     list.sort((a, b) => new Date(a.snoozedUntil) - new Date(b.snoozedUntil));
+  } else if (state.currentTab === 'cust_pending') {
+    list.sort((a, b) => new Date(b.pendingCustomerDate) - new Date(a.pendingCustomerDate));
   } else {
     list.sort((a, b) => new Date(b.dateEntered) - new Date(a.dateEntered));
   }
@@ -769,8 +932,9 @@ function getFilteredEntries() {
 
 // ===== Render =====
 function render() {
-  const liveCount = state.entries.filter(e => !e.cancelled && !e.snoozedUntil).length;
-  const snoozedCount = state.entries.filter(e => !e.cancelled && e.snoozedUntil).length;
+  const liveCount = state.entries.filter(e => !e.cancelled && !e.snoozedUntil && !e.pendingCustomer).length;
+  const pendingCustCount = state.entries.filter(e => !e.cancelled && e.pendingCustomer).length;
+  const snoozedCount = state.entries.filter(e => !e.cancelled && e.snoozedUntil && !e.pendingCustomer).length;
   const cancelledCount = state.entries.filter(e => e.cancelled).length;
   const today = new Date().toDateString();
   const assignedToday = state.entries.filter(e =>
@@ -779,27 +943,27 @@ function render() {
   ).length;
 
   document.getElementById('liveCount').textContent = liveCount;
+  document.getElementById('pendingCustCount').textContent = pendingCustCount;
   document.getElementById('snoozedCount').textContent = snoozedCount;
   document.getElementById('cancelledCount').textContent = cancelledCount;
   document.getElementById('statLive').textContent = liveCount;
+  document.getElementById('statPendingCust').textContent = pendingCustCount;
   document.getElementById('statSnoozed').textContent = snoozedCount;
   document.getElementById('statCancelled').textContent = cancelledCount;
   document.getElementById('statAssigned').textContent = assignedToday;
 
-  const titles = { live: 'Live Entries', snoozed: 'Snoozed Entries', cancelled: 'Cancelled Entries' };
+  const titles = { live: 'Live Entries', cust_pending: 'Pending with Customer', snoozed: 'Snoozed Entries', cancelled: 'Cancelled Entries' };
   document.getElementById('listTitle').textContent = titles[state.currentTab];
 
   const filterSelect = document.getElementById('filterAssignee');
   filterSelect.innerHTML = '<option value="all">All assignees</option>' +
     state.assignees.map(a => `<option value="${escape(a)}" ${state.filterAssignee === a ? 'selected' : ''}>${escape(a)}</option>`).join('');
 
-  // Render assignee chips
   const assigneeList = document.getElementById('assigneeList');
   const realAssignees = state.assignees.filter(a => a !== 'Unassigned');
   if (realAssignees.length === 0) {
     assigneeList.innerHTML = `<div class="assignee-empty">No team members yet. Click <strong>+ Add</strong> to create your first assignee. New entries default to <em>Unassigned</em>.</div>`;
   } else {
-    // Always show Unassigned first as a system chip, then user-added ones with remove buttons
     const unassignedCount = state.entries.filter(e => e.assignedTo === 'Unassigned' && !e.cancelled).length;
     let html = `<span class="assignee-chip"><span class="font-medium">Unassigned</span><span class="count">${unassignedCount}</span></span>`;
     html += realAssignees.map(a => {
@@ -818,6 +982,7 @@ function render() {
   if (list.length === 0) {
     const messages = {
       live: { msg: 'No live entries. Paste new entries on the left to begin.', icon: '∅' },
+      cust_pending: { msg: 'Nothing pending with customers.', icon: 'ʘ' },
       snoozed: { msg: 'Nothing snoozed. Use the Snooze button on an entry to defer it.', icon: '◷' },
       cancelled: { msg: 'Nothing cancelled yet. Mark entries done to move them here.', icon: '✕' },
     };
@@ -832,11 +997,24 @@ function render() {
   container.querySelectorAll('[data-edit]').forEach(el => el.addEventListener('change', handleEdit));
 }
 
+function getAgingClass(dateString) {
+  if (!dateString) return '';
+  const ageInDays = (Date.now() - new Date(dateString).getTime()) / (1000 * 60 * 60 * 24);
+  if (ageInDays > 7) return 'aging-red';
+  if (ageInDays > 3) return 'aging-amber';
+  return '';
+}
+
 function renderEntry(e) {
   const date = new Date(e.dateEntered);
   const isCancelled = e.cancelled;
   const isSnoozed = !!e.snoozedUntil;
-  const cardClass = isCancelled ? 'entry-card cancelled' : (isSnoozed ? 'entry-card snoozed' : 'entry-card');
+  const isPendingCust = !!e.pendingCustomer;
+  
+  let cardClass = 'entry-card';
+  if (isCancelled) cardClass += ' cancelled';
+  else if (isSnoozed) cardClass += ' snoozed';
+  else if (isPendingCust) cardClass += ' cust-pending';
 
   const assigneeOptions = state.assignees.map(a =>
     `<option value="${escape(a)}" ${e.assignedTo === a ? 'selected' : ''}>${escape(a)}</option>`
@@ -852,22 +1030,48 @@ function renderEntry(e) {
     snoozeBadge = `<span class="snooze-badge">◷ ${formatDateTime(until)}</span>`;
   }
 
+  let pendingBadge = '';
+  if (isPendingCust) {
+    const reqDate = new Date(e.pendingCustomerDate);
+    pendingBadge = `<span class="pending-cust-badge">◷ Requested ${formatDate(reqDate)}</span>`;
+    if (e.pendingCustomerNote) {
+      pendingBadge += `<span class="pending-cust-badge" style="border-left: none; background: transparent;">Awaiting: ${escape(e.pendingCustomerNote)}</span>`;
+    }
+  }
+
   let cancelInfo = '';
   if (isCancelled && e.cancelledAt) {
     cancelInfo = `<span class="text-[10px] font-mono text-[var(--ink-muted)] uppercase tracking-wider">Done ${formatDateTime(new Date(e.cancelledAt))}</span>`;
   }
+
+  let agingClass = '';
+  if (!isCancelled && !isSnoozed && !isPendingCust) {
+    agingClass = getAgingClass(e.dateEntered);
+  } else if (isPendingCust) {
+    agingClass = 'aging-blue';
+  }
+
+  const cleanPhone = e.phoneNumber.replace(/\D/g, '');
+  const callLink = `<a href="tel:${cleanPhone}" class="phone-link" style="color: var(--green)">[Call]</a>`;
+  const waLink = `<a href="https://wa.me/${cleanPhone}" target="_blank" class="phone-link" style="color: var(--green)">[WhatsApp]</a>`;
 
   let actions = '';
   if (isCancelled) {
     actions = `
       <button class="btn btn-sm" data-action="restore" data-id="${e.id}">Restore</button>
       <button class="btn btn-ghost btn-sm" data-action="delete" data-id="${e.id}">Delete</button>`;
+  } else if (isPendingCust) {
+    actions = `
+      <button class="btn btn-sm" data-action="restore_cust" data-id="${e.id}" style="border-color: var(--blue); color: var(--blue);">Follow Up</button>
+      <button class="btn btn-primary btn-sm" data-action="cancel" data-id="${e.id}">Mark Done</button>`;
   } else if (isSnoozed) {
     actions = `
       <button class="btn btn-sm" data-action="wake" data-id="${e.id}">Wake Now</button>
+      <button class="btn btn-sm" data-action="cust_pending" data-id="${e.id}" style="border-color: var(--blue); color: var(--blue);">Cust-Pending</button>
       <button class="btn btn-primary btn-sm" data-action="cancel" data-id="${e.id}">Mark Done</button>`;
   } else {
     actions = `
+      <button class="btn btn-sm" data-action="cust_pending" data-id="${e.id}" style="border-color: var(--blue); color: var(--blue);">Cust-Pending</button>
       <button class="btn btn-sm" data-action="snooze" data-id="${e.id}">Snooze</button>
       <button class="btn btn-primary btn-sm" data-action="cancel" data-id="${e.id}">Mark Done</button>`;
   }
@@ -879,13 +1083,14 @@ function renderEntry(e) {
       <div class="flex items-start justify-between gap-3 mb-2 flex-wrap">
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap mb-2">
-            <span class="date-stamp">${formatDate(date)}</span>
+            <span class="date-stamp ${agingClass}">${formatDate(date)}</span>
             ${snoozeBadge}
+            ${pendingBadge}
             ${cancelInfo}
           </div>
           <h3 class="font-display text-xl md:text-2xl font-bold strike-line leading-tight">${escape(e.name)}</h3>
         </div>
-        <div class="flex gap-2 flex-shrink-0">${actions}</div>
+        <div class="flex gap-2 flex-shrink-0 flex-wrap justify-end">${actions}</div>
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 mt-3 pt-3 divider-dashed">
@@ -899,7 +1104,9 @@ function renderEntry(e) {
         </div>
         <div>
           <div class="text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-0.5">Phone</div>
-          <div class="font-mono text-sm strike-line font-medium">${escape(e.phoneNumber)}</div>
+          <div class="font-mono text-sm strike-line font-medium">
+            ${escape(e.phoneNumber)} ${callLink} ${waLink}
+          </div>
         </div>
         <div>
           <div class="text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-0.5">Status</div>
@@ -948,9 +1155,21 @@ function handleAction(ev) {
   const id = ev.currentTarget.dataset.id;
   if (action === 'cancel') cancelEntry(id);
   else if (action === 'restore') restoreEntry(id);
+  else if (action === 'restore_cust') restoreFromCustomerPending(id);
   else if (action === 'wake') wakeEntry(id);
-  else if (action === 'delete') deleteEntry(id);
+  else if (action === 'cust_pending') openPendingCustModal(id);
   else if (action === 'snooze') openSnoozeModal(id);
+  else if (action === 'delete') {
+    const entry = state.entries.find(x => x.id === id);
+    if (entry) {
+      showConfirmModal(
+        'Delete Entry Permanently?',
+        `"${entry.name}" will be permanently deleted from the diary. This cannot be undone.`,
+        'Delete',
+        () => deleteEntry(id)
+      );
+    }
+  }
 }
 
 function handleEdit(ev) {
@@ -998,6 +1217,29 @@ function confirmSnooze() {
   closeSnoozeModal();
 }
 
+// ===== Pending Customer Modal =====
+let pendingCustId = null;
+function openPendingCustModal(id) {
+  pendingCustId = id;
+  const e = state.entries.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById('pendingCustEntryPreview').textContent = `${e.name} • ${e.customerId} • ${e.accountNumber}`;
+  document.getElementById('pendingCustNote').value = '';
+  document.getElementById('pendingCustModal').classList.add('show');
+  setTimeout(() => document.getElementById('pendingCustNote').focus(), 150);
+}
+function closePendingCustModal() {
+  document.getElementById('pendingCustModal').classList.remove('show');
+  pendingCustId = null;
+}
+function confirmPendingCust() {
+  if (!pendingCustId) return;
+  const note = document.getElementById('pendingCustNote').value.trim();
+  if (!note) { showToast('Please enter what you are waiting for'); return; }
+  moveToCustomerPending(pendingCustId, note);
+  closePendingCustModal();
+}
+
 // ===== Assignee Modal =====
 function openAssigneeModal() {
   document.getElementById('newAssigneeName').value = '';
@@ -1010,6 +1252,20 @@ function closeAssigneeModal() {
 function confirmAssignee() {
   const name = document.getElementById('newAssigneeName').value;
   if (addAssignee(name)) closeAssigneeModal();
+}
+
+// ===== Confirm Modal =====
+let confirmCallback = null;
+function showConfirmModal(title, message, acceptText, callback) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMessage').textContent = message;
+  document.getElementById('confirmAcceptBtn').textContent = acceptText;
+  confirmCallback = callback;
+  document.getElementById('confirmModal').classList.add('show');
+}
+function closeConfirmModal() {
+  document.getElementById('confirmModal').classList.remove('show');
+  confirmCallback = null;
 }
 
 // ===== Utilities =====
@@ -1086,12 +1342,27 @@ document.querySelectorAll('[data-snooze-preset]').forEach(btn => {
   });
 });
 
+document.getElementById('pendingCustCancelBtn').addEventListener('click', closePendingCustModal);
+document.getElementById('pendingCustCloseBtn').addEventListener('click', closePendingCustModal);
+document.getElementById('pendingCustConfirmBtn').addEventListener('click', confirmPendingCust);
+document.getElementById('pendingCustNote').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') confirmPendingCust();
+});
+
 document.getElementById('addAssigneeBtn').addEventListener('click', openAssigneeModal);
 document.getElementById('assigneeCancelBtn').addEventListener('click', closeAssigneeModal);
 document.getElementById('assigneeCloseBtn').addEventListener('click', closeAssigneeModal);
 document.getElementById('assigneeConfirmBtn').addEventListener('click', confirmAssignee);
 document.getElementById('newAssigneeName').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') confirmAssignee();
+});
+
+document.getElementById('emailBackupBtn').addEventListener('click', () => clearCancelledEntries());
+
+document.getElementById('confirmCancelBtn').addEventListener('click', closeConfirmModal);
+document.getElementById('confirmAcceptBtn').addEventListener('click', () => {
+  if (confirmCallback) confirmCallback();
+  closeConfirmModal();
 });
 
 document.getElementById('exportBtn').addEventListener('click', () => {
@@ -1111,14 +1382,22 @@ document.getElementById('exportBtn').addEventListener('click', () => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeSnoozeModal();
+    closePendingCustModal();
     closeAssigneeModal();
+    closeConfirmModal();
   }
 });
 document.getElementById('snoozeModal').addEventListener('click', (e) => {
   if (e.target.id === 'snoozeModal') closeSnoozeModal();
 });
+document.getElementById('pendingCustModal').addEventListener('click', (e) => {
+  if (e.target.id === 'pendingCustModal') closePendingCustModal();
+});
 document.getElementById('assigneeModal').addEventListener('click', (e) => {
   if (e.target.id === 'assigneeModal') closeAssigneeModal();
+});
+document.getElementById('confirmModal').addEventListener('click', (e) => {
+  if (e.target.id === 'confirmModal') closeConfirmModal();
 });
 
 function updateTodayDate() {
