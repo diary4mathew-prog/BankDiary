@@ -3,30 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Branch Diary — Manager's Task Ledger</title>
+<title>Branch Diary — Manager's Ledger</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --paper: #ede4cf;
-  --paper-2: #f4ecd9;
-  --paper-card: #faf3e1;
-  --paper-card-2: #f6efdc;
-  --ink: #1a140c;
-  --ink-2: #3d3324;
+  --paper: #f7f1e3;
+  --paper-2: #f2e9d4;
+  --ink: #2c241b;
+  --ink-2: #4a3f30;
   --ink-soft: #6b5d48;
   --ink-muted: #9a8b72;
-  --rule: #cdba93;
+  --rule: #d4c4a3;
   --rule-soft: #e0d2b0;
   --accent: #8b2635;
   --accent-2: #a8384a;
   --green: #3d5a30;
-  --amber: #a87b1f;
-  --red: #8b2635;
+  --amber: #b8860b;
   --blue: #2e5c8a;
-  --shadow: rgba(74, 53, 24, 0.12);
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; }
@@ -35,208 +31,260 @@ body {
   font-family: 'Newsreader', Georgia, serif;
   color: var(--ink);
   background: var(--paper);
-  background-image:
-    radial-gradient(ellipse at top, rgba(255, 247, 230, 0.7), transparent 60%),
-    radial-gradient(ellipse at bottom right, rgba(139, 38, 53, 0.04), transparent 50%),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0.06 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0.04 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
   min-height: 100vh;
 }
+
 .font-display { font-family: 'Fraunces', Georgia, serif; }
 .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-.entry-card {
-  background: var(--paper-card);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--accent);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset, 0 2px 8px var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-}
-.entry-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset, 0 6px 20px var(--shadow);
-}
-.entry-card.cancelled {
-  border-left-color: var(--ink-muted);
+/* --- Diary Header --- */
+.header-bar {
   background: var(--paper-2);
-  opacity: 0.78;
+  border-bottom: 1px solid var(--rule);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  backdrop-filter: blur(4px);
 }
-.entry-card.snoozed {
-  border-left-color: var(--amber);
-  background: var(--paper-card-2);
-}
-.entry-card.cust-pending {
-  border-left-color: var(--blue);
-  background: var(--paper-card-2);
+.brand-mark {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif; font-weight: 900;
+  font-size: 18px; border-radius: 2px;
 }
 
+/* --- Tabs --- */
+.tab-btn {
+  padding: 10px 12px;
+  font-family: 'Fraunces', serif;
+  font-weight: 500; font-size: 14px;
+  color: var(--ink-muted);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  border-top: none; border-left: none; border-right: none;
+}
+.tab-btn:hover { color: var(--ink); }
+.tab-btn.active { color: var(--ink); border-bottom-color: var(--accent); }
+.tab-btn .count {
+  display: inline-block; margin-left: 6px;
+  padding: 0px 6px; background: var(--rule-soft);
+  border-radius: 999px; font-size: 10px;
+  font-family: 'JetBrains Mono', monospace; color: var(--ink-2);
+}
+.tab-btn.active .count { background: var(--accent); color: var(--paper); }
+
+/* --- Top Input Bar --- */
+.input-bar {
+  background: var(--paper);
+  padding: 16px 0;
+  border-bottom: 1px dashed var(--rule);
+}
+.input-bar textarea {
+  font-family: 'Newsreader', serif;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--ink-muted);
+  width: 100%;
+  font-size: 16px;
+  color: var(--ink);
+  resize: none;
+  outline: none;
+  padding: 8px 0;
+  transition: border-color 0.2s;
+}
+.input-bar textarea:focus { border-bottom-color: var(--accent); }
+
+/* --- Diary Entries --- */
+.date-header {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 32px 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.date-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: transparent;
+}
+
+.entry-block {
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-radius: 4px;
+  padding: 12px 8px;
+}
+.entry-block:hover { background: rgba(212, 196, 163, 0.2); }
+.entry-block.expanded { background: rgba(247, 241, 227, 0.8); }
+
+.entry-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.entry-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-muted);
+  min-width: 50px;
+}
+.entry-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+  flex: 1;
+}
+.entry-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.entry-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+  padding-left: 62px; /* Align with title */
+}
+.entry-block.expanded .entry-details {
+  max-height: 500px;
+  padding-top: 16px;
+}
+
+/* --- Text & Elements inside Details --- */
+.detail-text {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin-bottom: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap; /* Preserve newlines in dictated text */
+}
+.meta-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.meta-item { display: flex; flex-direction: column; }
+.meta-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  margin-bottom: 2px;
+}
+.meta-value { font-weight: 500; color: var(--ink); }
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-top: 16px;
+  border-top: 1px dashed var(--rule);
+  padding-top: 16px;
+}
+
+.action-link {
+  font-family: 'Fraunces', serif;
+  font-size: 13px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+}
+.action-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.action-link.danger:hover { color: #8b2635; border-bottom-color: #8b2635; }
+.action-link.blue:hover { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* Custom Selects (No Tech Lines) */
+select, input[type="date"] {
+  font-family: 'Fraunces', serif;
+  font-size: 13px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  border-bottom: 1px dashed var(--ink-muted);
+  padding: 2px 4px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+select:focus, input[type="date"]:focus { border-bottom-color: var(--accent); border-bottom-style: solid; }
+select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2 3l3 3 3-3' stroke='%236b5d48' fill='none' stroke-width='1'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right center;
+  padding-right: 16px;
+}
+
+/* --- Status & Badges --- */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 8px; border-radius: 999px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; border: 1px solid currentColor;
+  font-family: 'JetBrains Mono', monospace;
+}
+.status-pill::before {
+  content: ''; width: 4px; height: 4px;
+  background: currentColor; border-radius: 50%;
+}
+
+.tag-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600;
+  padding: 2px 6px; border-radius: 3px;
+  background: var(--rule-soft); color: var(--ink-2);
+}
+.tag-badge.blue { background: rgba(46, 92, 138, 0.15); color: var(--blue); }
+.tag-badge.amber { background: rgba(184, 134, 11, 0.15); color: var(--amber); }
+.tag-badge.red { background: rgba(139, 38, 53, 0.15); color: var(--accent); }
+
+/* --- Strikethrough Animation --- */
 .strike-line { position: relative; display: inline-block; }
 .strike-line::after {
   content: '';
   position: absolute;
-  left: -6px; right: -6px; top: 52%;
-  height: 2px;
-  background: var(--ink);
+  left: -6px; right: -6px; top: 55%;
+  height: 1.5px;
+  background: var(--ink-soft);
   transform: scaleX(0);
   transform-origin: left center;
   border-radius: 1px;
 }
 .cancelled .strike-line::after {
-  animation: draw-strike 0.55s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation: draw-strike 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 @keyframes draw-strike {
-  from { transform: scaleX(0) rotate(-0.4deg); }
-  to   { transform: scaleX(1) rotate(-0.4deg); }
+  from { transform: scaleX(0) rotate(-0.2deg); }
+  to   { transform: scaleX(1) rotate(-0.2deg); }
 }
 
-.status-pill {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 2px 10px; border-radius: 999px;
-  font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
-  text-transform: uppercase; border: 1px solid currentColor;
-  font-family: 'JetBrains Mono', monospace;
-}
-.status-pill::before {
-  content: ''; width: 5px; height: 5px;
-  background: currentColor; border-radius: 50%;
-}
-
-.tab-btn {
-  position: relative;
-  padding: 12px 20px;
-  font-family: 'Fraunces', serif;
-  font-weight: 500; font-size: 15px;
-  color: var(--ink-soft);
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  background: transparent;
-  border-top: none; border-left: none; border-right: none;
-  margin-bottom: -1px;
-}
-.tab-btn:hover { color: var(--ink); }
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab-btn .count {
-  display: inline-block; margin-left: 8px;
-  padding: 1px 8px; background: var(--rule-soft);
-  border-radius: 999px; font-size: 11px;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--ink-2); font-weight: 500;
-}
-.tab-btn.active .count { background: var(--accent); color: var(--paper); }
-
-.btn {
-  padding: 8px 16px;
-  font-family: 'Fraunces', serif; font-weight: 500;
-  border: 1px solid var(--ink);
-  background: var(--paper-card);
-  color: var(--ink);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  border-radius: 2px; font-size: 14px;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.btn:hover { background: var(--ink); color: var(--paper); }
-.btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--ink); color: var(--paper); }
-.btn-primary:hover { background: var(--accent); border-color: var(--accent); }
-.btn-ghost { border-color: transparent; background: transparent; }
-.btn-ghost:hover { background: var(--rule-soft); color: var(--ink); border-color: transparent; }
-.btn-sm { padding: 5px 12px; font-size: 12px; }
-.btn-danger { border-color: var(--red); color: var(--red); }
-.btn-danger:hover { background: var(--red); color: var(--paper); }
-
-input, select, textarea {
-  font-family: 'Newsreader', serif;
-  background: var(--paper-card);
-  border: 1px solid var(--rule);
-  color: var(--ink);
-  padding: 7px 10px; border-radius: 2px;
-  font-size: 14px; outline: none;
-  transition: border-color 0.15s ease;
-  width: 100%;
-}
-input:focus, select:focus, textarea:focus {
-  border-color: var(--accent); background: var(--paper-card);
-}
-select {
-  appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%231a140c' fill='none' stroke-width='1.5'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  padding-right: 26px; cursor: pointer;
-}
-input[type="date"], input[type="time"] {
-  font-family: 'JetBrains Mono', monospace; font-size: 13px;
-}
-
-.date-stamp {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 8px;
-  border: 1.5px solid currentColor;
-  color: var(--accent);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transform: rotate(-1.2deg);
-  font-weight: 600;
-  background: rgba(255, 247, 230, 0.5);
-  transition: color 0.3s ease;
-}
-.date-stamp.aging-amber { color: var(--amber); border-color: var(--amber); }
-.date-stamp.aging-red { color: var(--red); border-color: var(--red); animation: pulse-red 2s infinite; }
-.date-stamp.aging-blue { color: var(--blue); border-color: var(--blue); }
-
-@keyframes pulse-red {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-.toast {
-  position: fixed; bottom: 24px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--ink); color: var(--paper);
-  padding: 12px 22px; border-radius: 3px;
-  font-family: 'Fraunces', serif; font-size: 14px;
-  opacity: 0; pointer-events: none;
-  transition: all 0.3s ease;
-  z-index: 100;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  max-width: 90%; text-align: center;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-.snooze-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 8px;
-  background: rgba(168, 123, 31, 0.15);
-  border: 1px solid var(--amber);
-  color: var(--amber);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; border-radius: 2px;
-  font-weight: 600; letter-spacing: 0.04em;
-}
-
-.pending-cust-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 8px;
-  background: rgba(46, 92, 138, 0.15);
-  border: 1px solid var(--blue);
-  color: var(--blue);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; border-radius: 2px;
-  font-weight: 600; letter-spacing: 0.04em;
-}
-
+/* --- Modals & Toasts --- */
 .modal-backdrop {
   position: fixed; inset: 0;
-  background: rgba(26, 20, 12, 0.5);
+  background: rgba(44, 36, 27, 0.4);
   backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   z-index: 50;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
@@ -245,132 +293,69 @@ input[type="date"], input[type="time"] {
 }
 .modal-backdrop.show { opacity: 1; pointer-events: auto; }
 .modal-card {
-  background: var(--paper-card);
+  background: var(--paper);
   border: 1px solid var(--rule);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-  max-width: 480px; width: 100%;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  max-width: 400px; width: 100%;
+  padding: 24px;
   transform: scale(0.95) translateY(8px);
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 .modal-backdrop.show .modal-card { transform: scale(1) translateY(0); }
 
-.paste-area {
-  font-family: 'JetBrains Mono', monospace;
-  background: var(--paper-2);
-  border: 1px dashed var(--rule);
-  font-size: 13px; line-height: 1.7;
-  color: var(--ink-2);
-  resize: vertical;
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: var(--paper);
+  padding: 10px 20px; border-radius: 3px;
+  font-family: 'Fraunces', serif; font-size: 14px;
+  opacity: 0; pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 100;
+  max-width: 90%; text-align: center;
 }
-.paste-area:focus {
-  border-style: solid; border-color: var(--accent);
-  background: var(--paper-card);
-}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: var(--paper-2); }
-::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: var(--ink-soft); }
-
-@keyframes ink-spread {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Custom inputs inside modals */
+.text-input {
+  font-family: 'Newsreader', serif;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  width: 100%;
+  font-size: 16px;
+  color: var(--ink);
+  padding: 8px 0;
+  outline: none;
 }
-.entry-card { animation: ink-spread 0.3s ease-out; }
+.text-input:focus { border-bottom-color: var(--accent); }
 
-@keyframes pulse-amber {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
+.btn {
+  padding: 8px 16px;
+  font-family: 'Fraunces', serif; font-weight: 500;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 2px; font-size: 14px;
+  transition: all 0.15s ease;
 }
-.snooze-badge { animation: pulse-amber 2.5s ease-in-out infinite; }
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn-primary { background: var(--ink); color: var(--paper); }
+.btn-primary:hover { background: var(--accent); border-color: var(--accent); }
+.btn-ghost { border-color: transparent; }
+.btn-ghost:hover { background: rgba(212, 196, 163, 0.3); border-color: transparent; color: var(--ink); }
 
 .empty-state {
   font-family: 'Fraunces', serif; font-style: italic;
   color: var(--ink-muted); text-align: center;
   padding: 80px 20px; font-size: 16px;
 }
-.empty-state-icon {
-  font-family: 'Fraunces', serif;
-  font-size: 72px; font-weight: 300;
-  color: var(--rule); line-height: 1;
-  margin-bottom: 16px;
-}
 
-.brand-mark {
-  width: 44px; height: 44px;
-  background: var(--ink); color: var(--paper);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Fraunces', serif; font-weight: 900;
-  font-size: 24px; border-radius: 2px;
-  position: relative; flex-shrink: 0;
-}
-.brand-mark::after {
-  content: ''; position: absolute; inset: 3px;
-  border: 1px solid var(--paper); border-radius: 1px;
-  pointer-events: none;
-}
-
-.sidebar-section {
-  background: var(--paper-card);
-  border: 1px solid var(--rule);
-  padding: 18px; border-radius: 2px;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset;
-}
-
-.corner-stamp {
-  position: fixed; bottom: 20px; right: 20px;
-  font-family: 'Fraunces', serif; font-size: 11px;
-  color: var(--accent); opacity: 0.15;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  font-weight: 600; pointer-events: none;
-  transform: rotate(-8deg); z-index: 1;
-}
-
-input::placeholder, textarea::placeholder {
-  color: var(--ink-muted); font-style: italic;
-}
-
-.stat-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 6px 0; border-bottom: 1px dashed var(--rule); font-size: 14px;
-}
-.stat-row:last-child { border-bottom: none; }
-.stat-row .label { color: var(--ink-soft); }
-.stat-row .value { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
-
-.assignee-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px; border: 1px solid var(--rule);
-  border-radius: 999px; background: var(--paper-2);
-  font-size: 12px;
-}
-.assignee-chip .count {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 600; color: var(--accent); font-size: 11px;
-}
-.assignee-chip .remove {
-  cursor: pointer; color: var(--ink-muted); margin-left: 2px;
-  font-size: 14px; line-height: 1; padding: 0 2px; border-radius: 50%;
-}
-.assignee-chip .remove:hover { color: var(--accent); }
-
-.assignee-empty {
-  font-style: italic; color: var(--ink-muted);
-  font-size: 13px; padding: 8px 4px; line-height: 1.6;
-}
-
-.divider-dashed { border-top: 1px dashed var(--rule); }
-
-.phone-link {
-  font-size: 10px;
-  font-family: 'JetBrains Mono', monospace;
-  margin-left: 6px;
-  text-decoration: none;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-.phone-link:hover { opacity: 1; text-decoration: underline; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -382,26 +367,22 @@ input::placeholder, textarea::placeholder {
 </head>
 <body>
 
-<div class="min-h-screen flex flex-col">
-
-<header class="border-b border-[var(--rule)] bg-[var(--paper-2)]/85 backdrop-blur sticky top-0 z-30">
-  <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-4">
+<!-- Header -->
+<header class="header-bar">
+  <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-4">
     <div class="flex items-center gap-3">
       <div class="brand-mark">B</div>
       <div>
-        <h1 class="font-display text-xl md:text-2xl font-bold leading-tight">Branch Diary</h1>
-        <p class="text-[10px] md:text-xs text-[var(--ink-soft)] font-mono tracking-wider uppercase">Manager's Task Ledger</p>
+        <h1 class="font-display text-lg md:text-xl font-bold leading-tight">Branch Diary</h1>
+        <p class="text-[10px] text-[var(--ink-muted)] font-mono tracking-wider uppercase">Manager's Ledger</p>
       </div>
     </div>
-    <div class="flex items-center gap-3 text-sm">
-      <div class="hidden md:flex flex-col items-end">
-        <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--ink-muted)]">Today</span>
-        <span id="todayDate" class="font-display font-medium text-[var(--ink)]"></span>
-      </div>
-      <button id="exportBtn" class="btn btn-ghost btn-sm hidden sm:inline-flex">Export</button>
+    <div class="flex items-center gap-3">
+      <button id="addAssigneeBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors">+ Assignee</button>
+      <button id="emailBackupBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors">Email Backup</button>
     </div>
   </div>
-  <div class="max-w-7xl mx-auto px-4 md:px-6 flex border-b border-[var(--rule)] overflow-x-auto">
+  <div class="max-w-3xl mx-auto px-4 md:px-6 flex overflow-x-auto">
     <button class="tab-btn active" data-tab="live">Live<span class="count" id="liveCount">0</span></button>
     <button class="tab-btn" data-tab="cust_pending">Cust-Pending<span class="count" id="pendingCustCount">0</span></button>
     <button class="tab-btn" data-tab="snoozed">Snoozed<span class="count" id="snoozedCount">0</span></button>
@@ -409,140 +390,71 @@ input::placeholder, textarea::placeholder {
   </div>
 </header>
 
-<main class="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-6 md:py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-  <aside class="lg:col-span-1 space-y-5">
-    <section class="sidebar-section">
-      <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
-        <h2 class="font-display text-lg font-bold">Paste Entries</h2>
-        <span class="text-[10px] font-mono text-[var(--ink-muted)] uppercase tracking-wider">ID Acct Name Phone Remarks</span>
-      </div>
-      <textarea id="pasteArea" class="paste-area w-full h-44 p-3 rounded-sm" placeholder="1111 222222 Rajesh Kumar 9876543210 KYC pending&#10;1111 222222 Priya Sharma 9811022334 Cheque clearance"></textarea>
-      <div class="flex gap-2 mt-3">
-        <button id="parseBtn" class="btn btn-primary flex-1">Parse &amp; Add</button>
-        <button id="clearPasteBtn" class="btn">Clear</button>
-      </div>
-      <p class="text-xs text-[var(--ink-muted)] mt-3 italic leading-relaxed">
-        Spaces separate fields. Name may span multiple words. Phone is auto-detected as the first number after the name.
-      </p>
-    </section>
-
-    <section class="sidebar-section">
-      <h2 class="font-display text-lg font-bold mb-3">At a Glance</h2>
-      <div class="space-y-1">
-        <div class="stat-row"><span class="label">Live entries</span><span class="value" id="statLive">0</span></div>
-        <div class="stat-row"><span class="label">Cust-Pending</span><span class="value" id="statPendingCust">0</span></div>
-        <div class="stat-row"><span class="label">Snoozed</span><span class="value" id="statSnoozed">0</span></div>
-        <div class="stat-row"><span class="label">Cancelled</span><span class="value" id="statCancelled">0</span></div>
-        <div class="stat-row" style="border-top: 1px solid var(--rule); border-bottom: none; padding-top: 10px; margin-top: 6px;">
-          <span class="label font-medium" style="color: var(--ink)">Assigned today</span>
-          <span class="value text-[var(--accent)]" id="statAssigned" style="font-size: 18px;">0</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="sidebar-section">
-      <h2 class="font-display text-lg font-bold mb-3">Backup & Cleanup</h2>
-      <p class="text-xs text-[var(--ink-muted)] mb-3 italic leading-relaxed">
-        Send all cancelled (completed) entries to your email as a backup text file, then clear them from the diary.
-      </p>
-      <button id="emailBackupBtn" class="btn w-full mb-2">Send Email & Clear</button>
-    </section>
-
-    <section class="sidebar-section">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="font-display text-lg font-bold">Assignees</h2>
-        <button id="addAssigneeBtn" class="text-xs text-[var(--accent)] hover:underline font-medium">+ Add</button>
-      </div>
-      <div id="assigneeList" class="flex flex-wrap gap-2"></div>
-    </section>
-  </aside>
-
-  <section class="lg:col-span-2">
-    <div class="flex items-center justify-between mb-4 gap-3 flex-wrap">
-      <h2 class="font-display text-2xl font-bold" id="listTitle">Live Entries</h2>
-      <div class="flex gap-2 items-center">
-        <input id="searchInput" type="text" placeholder="Search name, ID, account, phone..." class="text-sm" style="width: 220px; max-width: 100%;">
-        <select id="filterAssignee" class="text-sm" style="width: auto; min-width: 130px;"></select>
-      </div>
+<!-- Top Input Bar -->
+<div class="input-bar">
+  <div class="max-w-3xl mx-auto px-4 md:px-6">
+    <textarea id="pasteArea" rows="3" placeholder="Write or dictate anything. Use / to separate multiple entries. (Press Ctrl+Enter to add)&#10;&#10;Example: 1042 452110 Rajesh Kumar 9876543210 KYC pending / Remind staff to verify cheques tomorrow"></textarea>
+    <div class="flex justify-between items-center mt-2">
+      <span class="text-[10px] font-mono text-[var(--ink-muted)] uppercase tracking-wider hidden md:block">Press Ctrl+Enter to Add</span>
+      <button id="parseBtn" class="btn btn-primary text-sm">Add Entry</button>
     </div>
-    <div id="entriesList" class="space-y-3"></div>
-  </section>
-
-</main>
+  </div>
 </div>
 
-<div class="corner-stamp">Branch Copy</div>
+<!-- Main Diary Area -->
+<main class="max-w-3xl mx-auto w-full px-4 md:px-6 py-6">
+  <div id="entriesList"></div>
+</main>
 
 <!-- Snooze Modal -->
 <div class="modal-backdrop" id="snoozeModal">
-  <div class="modal-card p-6">
-    <div class="flex items-start justify-between mb-1">
-      <h3 class="font-display text-xl font-bold">Snooze Entry</h3>
-      <button class="btn btn-ghost btn-sm" id="snoozeCloseBtn" style="padding: 4px 10px;">✕</button>
-    </div>
-    <p class="text-sm text-[var(--ink-soft)] mb-4" id="snoozeEntryPreview"></p>
-    <div class="space-y-3">
+  <div class="modal-card">
+    <h3 class="font-display text-lg font-bold mb-1">Snooze Entry</h3>
+    <p class="text-sm text-[var(--ink-muted)] mb-4" id="snoozeEntryPreview"></p>
+    <div class="grid grid-cols-2 gap-3 mb-4">
       <div>
-        <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Return on date</label>
-        <input type="date" id="snoozeDate">
+        <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Date</label>
+        <input type="date" id="snoozeDate" class="text-input">
       </div>
       <div>
-        <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Return at time</label>
-        <input type="time" id="snoozeTime">
-      </div>
-      <div class="grid grid-cols-4 gap-2">
-        <button class="btn btn-sm" data-snooze-preset="1">+1h</button>
-        <button class="btn btn-sm" data-snooze-preset="4">+4h</button>
-        <button class="btn btn-sm" data-snooze-preset="24">Tomorrow</button>
-        <button class="btn btn-sm" data-snooze-preset="168">+Week</button>
-      </div>
-      <div>
-        <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Note (optional)</label>
-        <input type="text" id="snoozeNote" placeholder="Why are you snoozing this?">
+        <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Time</label>
+        <input type="time" id="snoozeTime" class="text-input">
       </div>
     </div>
-    <div class="flex justify-end gap-2 mt-5">
-      <button class="btn" id="snoozeCancelBtn">Cancel</button>
-      <button class="btn btn-primary" id="snoozeConfirmBtn">Confirm Snooze</button>
+    <div class="flex gap-2 mb-4">
+      <button class="btn btn-ghost text-xs" data-snooze-preset="1">+1h</button>
+      <button class="btn btn-ghost text-xs" data-snooze-preset="4">+4h</button>
+      <button class="btn btn-ghost text-xs" data-snooze-preset="24">Tomorrow</button>
+      <button class="btn btn-ghost text-xs" data-snooze-preset="168">+Week</button>
+    </div>
+    <input type="text" id="snoozeNote" class="text-input mb-6" placeholder="Why are you snoozing?">
+    <div class="flex justify-end gap-2">
+      <button class="btn btn-ghost" id="snoozeCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="snoozeConfirmBtn">Confirm</button>
     </div>
   </div>
 </div>
 
 <!-- Cust-Pending Modal -->
 <div class="modal-backdrop" id="pendingCustModal">
-  <div class="modal-card p-6">
-    <div class="flex items-start justify-between mb-1">
-      <h3 class="font-display text-xl font-bold">Move to Cust-Pending</h3>
-      <button class="btn btn-ghost btn-sm" id="pendingCustCloseBtn" style="padding: 4px 10px;">✕</button>
-    </div>
-    <p class="text-sm text-[var(--ink-soft)] mb-4" id="pendingCustEntryPreview"></p>
-    <div class="space-y-3">
-      <div>
-        <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">What are you waiting for?</label>
-        <input type="text" id="pendingCustNote" placeholder="e.g. KYC Form, Signature, Cheque Leaf">
-      </div>
-    </div>
-    <div class="flex justify-end gap-2 mt-5">
-      <button class="btn" id="pendingCustCancelBtn">Cancel</button>
-      <button class="btn btn-primary" id="pendingCustConfirmBtn" style="background: var(--blue); border-color: var(--blue);">Confirm</button>
+  <div class="modal-card">
+    <h3 class="font-display text-lg font-bold mb-1">Move to Cust-Pending</h3>
+    <p class="text-sm text-[var(--ink-muted)] mb-4" id="pendingCustEntryPreview"></p>
+    <input type="text" id="pendingCustNote" class="text-input mb-6" placeholder="What are you waiting for? (e.g. KYC Form)">
+    <div class="flex justify-end gap-2">
+      <button class="btn btn-ghost" id="pendingCustCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="pendingCustConfirmBtn" style="background: var(--blue); border-color: var(--blue); color: white;">Confirm</button>
     </div>
   </div>
 </div>
 
 <!-- Assignee Modal -->
 <div class="modal-backdrop" id="assigneeModal">
-  <div class="modal-card p-6">
-    <div class="flex items-start justify-between mb-4">
-      <h3 class="font-display text-xl font-bold">Add Assignee</h3>
-      <button class="btn btn-ghost btn-sm" id="assigneeCloseBtn" style="padding: 4px 10px;">✕</button>
-    </div>
-    <div>
-      <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Name</label>
-      <input type="text" id="newAssigneeName" placeholder="e.g. Anjali Mehta">
-    </div>
-    <div class="flex justify-end gap-2 mt-5">
-      <button class="btn" id="assigneeCancelBtn">Cancel</button>
+  <div class="modal-card">
+    <h3 class="font-display text-lg font-bold mb-4">Add Assignee</h3>
+    <input type="text" id="newAssigneeName" class="text-input mb-6" placeholder="Name (e.g. Anjali)">
+    <div class="flex justify-end gap-2">
+      <button class="btn btn-ghost" id="assigneeCancelBtn">Cancel</button>
       <button class="btn btn-primary" id="assigneeConfirmBtn">Add</button>
     </div>
   </div>
@@ -550,12 +462,12 @@ input::placeholder, textarea::placeholder {
 
 <!-- Confirm Modal -->
 <div class="modal-backdrop" id="confirmModal">
-  <div class="modal-card p-6">
-    <h3 class="font-display text-xl font-bold mb-2" id="confirmTitle">Are you sure?</h3>
-    <p class="text-sm text-[var(--ink-soft)] mb-5" id="confirmMessage"></p>
+  <div class="modal-card">
+    <h3 class="font-display text-lg font-bold mb-2" id="confirmTitle">Are you sure?</h3>
+    <p class="text-sm text-[var(--ink-soft)] mb-6" id="confirmMessage"></p>
     <div class="flex justify-end gap-2">
-      <button class="btn" id="confirmCancelBtn">Cancel</button>
-      <button class="btn btn-danger" id="confirmAcceptBtn">Delete</button>
+      <button class="btn btn-ghost" id="confirmCancelBtn">Cancel</button>
+      <button class="btn" id="confirmAcceptBtn" style="border-color: var(--accent); color: var(--accent);">Confirm</button>
     </div>
   </div>
 </div>
@@ -568,19 +480,17 @@ let state = {
   entries: [],
   assignees: ['Unassigned'],
   currentTab: 'live',
-  searchQuery: '',
-  filterAssignee: 'all',
 };
 
-const STATUSES = ['Pending', 'In Progress', 'Follow-up Required', 'Awaiting Docs', 'Resolved', 'Escalated'];
+const STATUSES = ['Pending', 'In Progress', 'Follow-up', 'Awaiting Docs', 'Resolved', 'Escalated'];
 
 // ===== Persistence =====
 function save() {
-  localStorage.setItem('branch_diary_v3', JSON.stringify(state));
+  localStorage.setItem('branch_diary_diary_v1', JSON.stringify(state));
 }
 function load() {
   try {
-    const raw = localStorage.getItem('branch_diary_v3');
+    const raw = localStorage.getItem('branch_diary_diary_v1');
     if (raw) {
       const data = JSON.parse(raw);
       state = { ...state, ...data };
@@ -588,13 +498,6 @@ function load() {
       if (!state.assignees.includes('Unassigned')) state.assignees.unshift('Unassigned');
       if (!state.entries) state.entries = [];
     } else {
-      // Try migrating from v2
-      const v2raw = localStorage.getItem('branch_diary_v2');
-      if (v2raw) {
-        localStorage.setItem('branch_diary_v3', v2raw);
-        load();
-        return;
-      }
       addSampleData();
     }
   } catch (e) { console.warn('Load failed', e); }
@@ -607,33 +510,59 @@ function addSampleData() {
       remarks: 'KYC documents pending - customer to submit address proof',
       dateEntered: new Date(now - 3600000).toISOString(),
       assignedTo: 'Unassigned', assignedDate: new Date(now - 3600000).toISOString().slice(0, 10),
-      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '' },
-    { id: 'e_s2', customerId: '2078', accountNumber: '771032', name: 'Sunita Devi', phoneNumber: '9811022334',
-      remarks: 'Cheque clearance pending - branch visit required for signature verification',
-      dateEntered: new Date(now - 86400000 * 4).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 4).toISOString().slice(0, 10),
-      status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '' },
-    { id: 'e_s3', customerId: '3301', accountNumber: '882544', name: 'Mohan Lal', phoneNumber: '9001122334',
-      remarks: 'Loan document verification - income proof submitted',
-      dateEntered: new Date(now - 86400000 * 8).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 8).toISOString().slice(0, 10),
-      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '' },
+      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
+    
+    { id: 'e_s2', customerId: '', accountNumber: '', name: 'Diary Note', phoneNumber: '',
+      remarks: 'Discussed the new loan policy with the regional manager. Need to update the team by next week. Also need to check if Rajesh submitted his KYC.',
+      dateEntered: new Date(now - 7200000).toISOString(),
+      assignedTo: 'Unassigned', assignedDate: new Date(now - 7200000).toISOString().slice(0, 10),
+      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
+      
+    { id: 'e_s3', customerId: '2078', accountNumber: '771032', name: 'Sunita Devi', phoneNumber: '9811022334',
+      remarks: 'Cheque clearance pending - branch visit required',
+      dateEntered: new Date(now - 86400000 * 1).toISOString(),
+      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 1).toISOString().slice(0, 10),
+      status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, 
+      pendingCustomer: true, pendingCustomerDate: new Date(now - 3600000 * 5).toISOString(), pendingCustomerNote: 'Signed Form 60', expanded: false },
+      
     { id: 'e_s4', customerId: '6789', accountNumber: '554433', name: 'Amit Patel', phoneNumber: '9988776655',
       remarks: 'Home loan inquiry - sent interest rate details',
       dateEntered: new Date(now - 86400000 * 2).toISOString(),
       assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 2).toISOString().slice(0, 10),
-      status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true, cancelledAt: new Date(now - 86400000).toISOString(), pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '' },
-    { id: 'e_s5', customerId: '9012', accountNumber: '112233', name: 'Sneha Gupta', phoneNumber: '9876501234',
-      remarks: 'Awaiting signature on loan form',
-      dateEntered: new Date(now - 86400000 * 1).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 1).toISOString().slice(0, 10),
-      status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, 
-      pendingCustomer: true, pendingCustomerDate: new Date(now - 3600000 * 5).toISOString(), pendingCustomerNote: 'Signed Form 60' },
+      status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true, cancelledAt: new Date(now - 86400000).toISOString(), pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
   ];
   save();
 }
 
 // ===== Parser =====
+// Uses '/' to split multiple entries. Handles multiline dictation within a single block.
+function parseText(text) {
+  // Split by '/' to get individual entry blocks
+  const blocks = text.split('/');
+  const results = [];
+  
+  for (const block of blocks) {
+    // Replace newlines with spaces to handle dictation multiline within the same entry
+    const normalizedLine = block.replace(/\n/g, ' ').trim();
+    if (!normalizedLine) continue;
+    
+    const parsed = parseLine(normalizedLine);
+    if (parsed) {
+      results.push(parsed);
+    } else {
+      // Fallback: Add as a diary note
+      results.push({
+        customerId: '', 
+        accountNumber: '', 
+        name: 'Diary Note', 
+        phoneNumber: '', 
+        remarks: normalizedLine 
+      });
+    }
+  }
+  return results;
+}
+
 function parseLine(line) {
   const trimmed = line.trim();
   if (!trimmed) return null;
@@ -664,19 +593,6 @@ function parseLine(line) {
   return { customerId, accountNumber, name, phoneNumber, remarks };
 }
 
-function parseText(text) {
-  const lines = text.split('\n');
-  const results = [];
-  const skipped = [];
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    const parsed = parseLine(line);
-    if (parsed) results.push(parsed);
-    else skipped.push(line);
-  }
-  return { results, skipped };
-}
-
 // ===== Entry management =====
 function addEntries(parsedList) {
   const now = new Date();
@@ -695,11 +611,26 @@ function addEntries(parsedList) {
       cancelledAt: null,
       pendingCustomer: false,
       pendingCustomerDate: null,
-      pendingCustomerNote: ''
+      pendingCustomerNote: '',
+      expanded: false // Default collapsed
     });
   }
   save();
   render();
+}
+
+function toggleExpand(id) {
+  const e = state.entries.find(x => x.id === id);
+  if (e) {
+    e.expanded = !e.expanded;
+    // Direct DOM manipulation for instant feedback without full re-render
+    const el = document.querySelector(`[data-entry-id="${id}"]`);
+    if (el) {
+      el.classList.toggle('expanded', e.expanded);
+    } else {
+      render();
+    }
+  }
 }
 
 function cancelEntry(id) {
@@ -712,9 +643,10 @@ function cancelEntry(id) {
     e.snoozeNote = '';
     e.pendingCustomer = false;
     e.pendingCustomerNote = '';
+    e.expanded = false;
     save();
     render();
-    showToast('Entry marked complete — moved to Cancelled');
+    showToast('Entry marked complete');
   }
 }
 
@@ -730,7 +662,7 @@ function restoreEntry(id) {
     e.status = 'Pending';
     save();
     render();
-    showToast('Entry restored to Live');
+    showToast('Restored to Live');
   }
 }
 
@@ -741,7 +673,7 @@ function wakeEntry(id) {
     e.snoozeNote = '';
     save();
     render();
-    showToast('Entry returned to Live');
+    showToast('Returned to Live');
   }
 }
 
@@ -749,7 +681,7 @@ function deleteEntry(id) {
   state.entries = state.entries.filter(x => x.id !== id);
   save();
   render();
-  showToast('Entry permanently deleted');
+  showToast('Deleted');
 }
 
 function snoozeEntry(id, until, note) {
@@ -757,7 +689,7 @@ function snoozeEntry(id, until, note) {
   if (e) {
     e.snoozedUntil = until.toISOString();
     e.snoozeNote = note;
-    e.pendingCustomer = false; // Cannot be snoozed and pending customer
+    e.pendingCustomer = false; 
     save();
     render();
     showToast('Snoozed until ' + formatDateTime(until));
@@ -770,7 +702,7 @@ function moveToCustomerPending(id, note) {
     e.pendingCustomer = true;
     e.pendingCustomerDate = new Date().toISOString();
     e.pendingCustomerNote = note;
-    e.snoozedUntil = null; // Clear snooze if moved to customer
+    e.snoozedUntil = null; 
     save();
     render();
     showToast('Moved to Cust-Pending');
@@ -799,13 +731,12 @@ function clearCancelledEntries() {
   
   showConfirmModal(
     'Clear Cancelled Entries?',
-    `${count} cancelled entr${count === 1 ? 'y' : 'ies'} will be permanently deleted from the diary. Make sure your email has been sent.`,
-    'Clear Entries',
+    `${count} entries will be permanently deleted. Ensure your email was sent.`,
     () => {
       state.entries = state.entries.filter(e => !e.cancelled);
       save();
       render();
-      showToast(`${count} cancelled entr${count === 1 ? 'y' : 'ies'} cleared.`);
+      showToast(`${count} entries cleared.`);
     }
   );
 }
@@ -817,30 +748,22 @@ function sendEmailBackup(silent = false) {
     return;
   }
 
-  let body = `BRANCH DIARY BACKUP - ${formatDate(new Date())}\n\n--- COMPLETED/CANCELLED ENTRIES ---\n\n`;
+  let body = `BRANCH DIARY BACKUP - ${formatDate(new Date())}\n\n`;
   cancelled.forEach((e, i) => {
     body += `${i + 1}. ${e.name.toUpperCase()}\n`;
-    body += `   Customer ID: ${e.customerId}\n`;
-    body += `   Account No.: ${e.accountNumber}\n`;
-    body += `   Phone: ${e.phoneNumber}\n`;
+    if (e.customerId) body += `   ID: ${e.customerId} | Acct: ${e.accountNumber} | Ph: ${e.phoneNumber}\n`;
     body += `   Remarks: ${e.remarks || 'N/A'}\n`;
-    body += `   Assigned To: ${e.assignedTo}\n`;
-    body += `   Status: ${e.status}\n`;
-    body += `   Date Entered: ${formatDate(new Date(e.dateEntered))}\n`;
-    body += `   Date Cancelled: ${formatDateTime(new Date(e.cancelledAt))}\n\n`;
+    body += `   Assigned: ${e.assignedTo} | Status: ${e.status}\n`;
+    body += `   Done: ${formatDateTime(new Date(e.cancelledAt))}\n\n`;
   });
 
-  const subject = `Branch Diary Backup - ${formatDate(new Date())}`;
-  const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  
+  const mailtoLink = `mailto:?subject=${encodeURIComponent('Branch Diary Backup')}&body=${encodeURIComponent(body)}`;
   const a = document.createElement('a');
   a.href = mailtoLink;
   a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-
-  if (!silent) showToast('Email app opened with backup text.');
 }
 
 function checkAndWakeUp() {
@@ -857,43 +780,23 @@ function checkAndWakeUp() {
   }
   if (woken > 0) {
     save();
-    showToast(woken + ' snoozed entr' + (woken === 1 ? 'y' : 'ies') + ' returned to Live');
+    showToast(woken + ' snoozed entries returned to Live');
   }
   return woken;
 }
 
-// ===== Assignee management =====
+// ===== Assignees =====
 function addAssignee(name) {
   name = name.trim();
   if (!name) { showToast('Enter a name'); return false; }
   if (state.assignees.includes(name)) { showToast('Already exists'); return false; }
   state.assignees.push(name);
   save();
-  render();
   showToast('Assignee added: ' + name);
   return true;
 }
 
-function removeAssignee(name) {
-  if (name === 'Unassigned') {
-    showToast('Cannot remove "Unassigned"');
-    return;
-  }
-  let reassigned = 0;
-  for (const e of state.entries) {
-    if (e.assignedTo === name) {
-      e.assignedTo = 'Unassigned';
-      reassigned++;
-    }
-  }
-  state.assignees = state.assignees.filter(a => a !== name);
-  if (state.filterAssignee === name) state.filterAssignee = 'all';
-  save();
-  render();
-  showToast('Removed ' + name + (reassigned > 0 ? ` (${reassigned} entr${reassigned === 1 ? 'y' : 'ies'} moved to Unassigned)` : ''));
-}
-
-// ===== Filtering =====
+// ===== Filtering & Grouping =====
 function isVisible(entry, tab) {
   if (tab === 'live') return !entry.cancelled && !entry.snoozedUntil && !entry.pendingCustomer;
   if (tab === 'cust_pending') return !entry.cancelled && entry.pendingCustomer;
@@ -902,22 +805,10 @@ function isVisible(entry, tab) {
   return false;
 }
 
-function getFilteredEntries() {
+function getGroupedEntries() {
   let list = state.entries.filter(e => isVisible(e, state.currentTab));
-
-  if (state.searchQuery) {
-    const q = state.searchQuery.toLowerCase();
-    list = list.filter(e =>
-      e.name.toLowerCase().includes(q) ||
-      e.customerId.includes(q) ||
-      e.accountNumber.includes(q) ||
-      e.phoneNumber.includes(q) ||
-      (e.remarks || '').toLowerCase().includes(q)
-    );
-  }
-  if (state.filterAssignee !== 'all') {
-    list = list.filter(e => e.assignedTo === state.filterAssignee);
-  }
+  
+  // Sort
   if (state.currentTab === 'cancelled') {
     list.sort((a, b) => new Date(b.cancelledAt) - new Date(a.cancelledAt));
   } else if (state.currentTab === 'snoozed') {
@@ -927,7 +818,23 @@ function getFilteredEntries() {
   } else {
     list.sort((a, b) => new Date(b.dateEntered) - new Date(a.dateEntered));
   }
-  return list;
+  
+  // Group by Date
+  const groups = {};
+  list.forEach(e => {
+    let dateKey;
+    if (state.currentTab === 'cancelled' && e.cancelledAt) {
+      dateKey = new Date(e.cancelledAt).toDateString();
+    } else if (state.currentTab === 'cust_pending' && e.pendingCustomerDate) {
+      dateKey = new Date(e.pendingCustomerDate).toDateString();
+    } else {
+      dateKey = new Date(e.dateEntered).toDateString();
+    }
+    if (!groups[dateKey]) groups[dateKey] = [];
+    groups[dateKey].push(e);
+  });
+  
+  return groups;
 }
 
 // ===== Render =====
@@ -936,73 +843,57 @@ function render() {
   const pendingCustCount = state.entries.filter(e => !e.cancelled && e.pendingCustomer).length;
   const snoozedCount = state.entries.filter(e => !e.cancelled && e.snoozedUntil && !e.pendingCustomer).length;
   const cancelledCount = state.entries.filter(e => e.cancelled).length;
-  const today = new Date().toDateString();
-  const assignedToday = state.entries.filter(e =>
-    e.assignedTo !== 'Unassigned' &&
-    new Date(e.dateEntered).toDateString() === today
-  ).length;
 
   document.getElementById('liveCount').textContent = liveCount;
   document.getElementById('pendingCustCount').textContent = pendingCustCount;
   document.getElementById('snoozedCount').textContent = snoozedCount;
   document.getElementById('cancelledCount').textContent = cancelledCount;
-  document.getElementById('statLive').textContent = liveCount;
-  document.getElementById('statPendingCust').textContent = pendingCustCount;
-  document.getElementById('statSnoozed').textContent = snoozedCount;
-  document.getElementById('statCancelled').textContent = cancelledCount;
-  document.getElementById('statAssigned').textContent = assignedToday;
 
-  const titles = { live: 'Live Entries', cust_pending: 'Pending with Customer', snoozed: 'Snoozed Entries', cancelled: 'Cancelled Entries' };
-  document.getElementById('listTitle').textContent = titles[state.currentTab];
-
-  const filterSelect = document.getElementById('filterAssignee');
-  filterSelect.innerHTML = '<option value="all">All assignees</option>' +
-    state.assignees.map(a => `<option value="${escape(a)}" ${state.filterAssignee === a ? 'selected' : ''}>${escape(a)}</option>`).join('');
-
-  const assigneeList = document.getElementById('assigneeList');
-  const realAssignees = state.assignees.filter(a => a !== 'Unassigned');
-  if (realAssignees.length === 0) {
-    assigneeList.innerHTML = `<div class="assignee-empty">No team members yet. Click <strong>+ Add</strong> to create your first assignee. New entries default to <em>Unassigned</em>.</div>`;
-  } else {
-    const unassignedCount = state.entries.filter(e => e.assignedTo === 'Unassigned' && !e.cancelled).length;
-    let html = `<span class="assignee-chip"><span class="font-medium">Unassigned</span><span class="count">${unassignedCount}</span></span>`;
-    html += realAssignees.map(a => {
-      const count = state.entries.filter(e => e.assignedTo === a && !e.cancelled).length;
-      return `<span class="assignee-chip"><span class="font-medium">${escape(a)}</span><span class="count">${count}</span><span class="remove" data-remove-assignee="${escape(a)}" title="Remove">×</span></span>`;
-    }).join('');
-    assigneeList.innerHTML = html;
-    assigneeList.querySelectorAll('[data-remove-assignee]').forEach(el => {
-      el.addEventListener('click', () => removeAssignee(el.dataset.removeAssignee));
-    });
-  }
-
-  const list = getFilteredEntries();
+  const groups = getGroupedEntries();
+  const dateKeys = Object.keys(groups);
   const container = document.getElementById('entriesList');
 
-  if (list.length === 0) {
+  if (dateKeys.length === 0) {
     const messages = {
-      live: { msg: 'No live entries. Paste new entries on the left to begin.', icon: '∅' },
-      cust_pending: { msg: 'Nothing pending with customers.', icon: 'ʘ' },
-      snoozed: { msg: 'Nothing snoozed. Use the Snooze button on an entry to defer it.', icon: '◷' },
-      cancelled: { msg: 'Nothing cancelled yet. Mark entries done to move them here.', icon: '✕' },
+      live: 'No live entries. Write a note above to begin.',
+      cust_pending: 'Nothing pending with customers.',
+      snoozed: 'Nothing snoozed.',
+      cancelled: 'Nothing cancelled yet.',
     };
-    const info = messages[state.currentTab];
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">${info.icon}</div><div>${info.msg}</div></div>`;
+    container.innerHTML = `<div class="empty-state">${messages[state.currentTab]}</div>`;
     return;
   }
 
-  container.innerHTML = list.map(entry => renderEntry(entry)).join('');
+  let html = '';
+  for (const dateKey of dateKeys) {
+    const date = new Date(dateKey);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+    
+    let dateLabel;
+    if (date.toDateString() === today.toDateString()) dateLabel = 'Today';
+    else if (date.toDateString() === yesterday.toDateString()) dateLabel = 'Yesterday';
+    else dateLabel = date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+    
+    html += `<div class="date-header"><span>${dateLabel}</span></div>`;
+    
+    for (const e of groups[dateKey]) {
+      html += renderEntry(e);
+    }
+  }
 
+  container.innerHTML = html;
+
+  // Attach listeners
+  container.querySelectorAll('.entry-block').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      // Don't toggle if clicking a button, select, or link inside
+      if (ev.target.closest('button, select, input, a, .action-link')) return;
+      toggleExpand(el.dataset.entryId);
+    });
+  });
   container.querySelectorAll('[data-action]').forEach(el => el.addEventListener('click', handleAction));
   container.querySelectorAll('[data-edit]').forEach(el => el.addEventListener('change', handleEdit));
-}
-
-function getAgingClass(dateString) {
-  if (!dateString) return '';
-  const ageInDays = (Date.now() - new Date(dateString).getTime()) / (1000 * 60 * 60 * 24);
-  if (ageInDays > 7) return 'aging-red';
-  if (ageInDays > 3) return 'aging-amber';
-  return '';
 }
 
 function renderEntry(e) {
@@ -1010,147 +901,102 @@ function renderEntry(e) {
   const isCancelled = e.cancelled;
   const isSnoozed = !!e.snoozedUntil;
   const isPendingCust = !!e.pendingCustomer;
+  const isNote = !e.customerId;
   
-  let cardClass = 'entry-card';
-  if (isCancelled) cardClass += ' cancelled';
-  else if (isSnoozed) cardClass += ' snoozed';
-  else if (isPendingCust) cardClass += ' cust-pending';
+  let statusColor = '#6b5d48';
+  if (e.status === 'Pending') statusColor = '#b8860b';
+  else if (e.status === 'Resolved') statusColor = '#3d5a30';
+  else if (e.status === 'Escalated') statusColor = '#8b2635';
 
-  const assigneeOptions = state.assignees.map(a =>
-    `<option value="${escape(a)}" ${e.assignedTo === a ? 'selected' : ''}>${escape(a)}</option>`
-  ).join('');
-
-  const statusOptions = STATUSES.map(s =>
-    `<option value="${s}" ${e.status === s ? 'selected' : ''}>${s}</option>`
-  ).join('');
-
-  let snoozeBadge = '';
-  if (isSnoozed) {
-    const until = new Date(e.snoozedUntil);
-    snoozeBadge = `<span class="snooze-badge">◷ ${formatDateTime(until)}</span>`;
-  }
-
-  let pendingBadge = '';
-  if (isPendingCust) {
-    const reqDate = new Date(e.pendingCustomerDate);
-    pendingBadge = `<span class="pending-cust-badge">◷ Requested ${formatDate(reqDate)}</span>`;
-    if (e.pendingCustomerNote) {
-      pendingBadge += `<span class="pending-cust-badge" style="border-left: none; background: transparent;">Awaiting: ${escape(e.pendingCustomerNote)}</span>`;
+  let badges = '';
+  if (isSnoozed) badges += `<span class="tag-badge amber">◷ ${formatDateTime(new Date(e.snoozedUntil))}</span>`;
+  if (isPendingCust) badges += `<span class="tag-badge blue">◷ Cust: ${escape(e.pendingCustomerNote)}</span>`;
+  
+  let detailsHtml = '';
+  
+  // Meta info
+  if (!isNote) {
+    detailsHtml += `<div class="meta-grid">`;
+    detailsHtml += `<div class="meta-item"><span class="meta-label">Cust ID</span><span class="meta-value">${escape(e.customerId)}</span></div>`;
+    detailsHtml += `<div class="meta-item"><span class="meta-label">Account</span><span class="meta-value">${escape(e.accountNumber)}</span></div>`;
+    if (e.phoneNumber) {
+      const cleanPhone = e.phoneNumber.replace(/\D/g, '');
+      detailsHtml += `<div class="meta-item"><span class="meta-label">Phone</span><span class="meta-value">${escape(e.phoneNumber)} <a href="tel:${cleanPhone}" class="action-link" style="font-size:11px; color:var(--green); margin-left:4px;">Call</a> <a href="https://wa.me/${cleanPhone}" target="_blank" class="action-link" style="font-size:11px; color:var(--green); margin-left:4px;">WA</a></span></div>`;
     }
+    detailsHtml += `</div>`;
   }
-
-  let cancelInfo = '';
+  
+  detailsHtml += `<div class="detail-text strike-line">${escape(e.remarks)}</div>`;
+  
   if (isCancelled && e.cancelledAt) {
-    cancelInfo = `<span class="text-[10px] font-mono text-[var(--ink-muted)] uppercase tracking-wider">Done ${formatDateTime(new Date(e.cancelledAt))}</span>`;
+    detailsHtml += `<div class="text-xs text-[var(--ink-muted)] font-mono mb-4">Done ${formatDateTime(new Date(e.cancelledAt))}</div>`;
   }
 
-  let agingClass = '';
-  if (!isCancelled && !isSnoozed && !isPendingCust) {
-    agingClass = getAgingClass(e.dateEntered);
-  } else if (isPendingCust) {
-    agingClass = 'aging-blue';
-  }
-
-  const cleanPhone = e.phoneNumber.replace(/\D/g, '');
-  const callLink = `<a href="tel:${cleanPhone}" class="phone-link" style="color: var(--green)">[Call]</a>`;
-  const waLink = `<a href="https://wa.me/${cleanPhone}" target="_blank" class="phone-link" style="color: var(--green)">[WhatsApp]</a>`;
-
+  // Actions
   let actions = '';
   if (isCancelled) {
     actions = `
-      <button class="btn btn-sm" data-action="restore" data-id="${e.id}">Restore</button>
-      <button class="btn btn-ghost btn-sm" data-action="delete" data-id="${e.id}">Delete</button>`;
+      <a class="action-link" data-action="restore" data-id="${e.id}">Restore</a>
+      <a class="action-link danger" data-action="delete" data-id="${e.id}">Delete Permanently</a>`;
   } else if (isPendingCust) {
     actions = `
-      <button class="btn btn-sm" data-action="restore_cust" data-id="${e.id}" style="border-color: var(--blue); color: var(--blue);">Follow Up</button>
-      <button class="btn btn-primary btn-sm" data-action="cancel" data-id="${e.id}">Mark Done</button>`;
+      <a class="action-link blue" data-action="restore_cust" data-id="${e.id}">Follow Up (Move to Live)</a>
+      <a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
   } else if (isSnoozed) {
     actions = `
-      <button class="btn btn-sm" data-action="wake" data-id="${e.id}">Wake Now</button>
-      <button class="btn btn-sm" data-action="cust_pending" data-id="${e.id}" style="border-color: var(--blue); color: var(--blue);">Cust-Pending</button>
-      <button class="btn btn-primary btn-sm" data-action="cancel" data-id="${e.id}">Mark Done</button>`;
+      <a class="action-link" data-action="wake" data-id="${e.id}">Wake Now</a>
+      <a class="action-link blue" data-action="cust_pending" data-id="${e.id}">Cust-Pending</a>
+      <a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
   } else {
     actions = `
-      <button class="btn btn-sm" data-action="cust_pending" data-id="${e.id}" style="border-color: var(--blue); color: var(--blue);">Cust-Pending</button>
-      <button class="btn btn-sm" data-action="snooze" data-id="${e.id}">Snooze</button>
-      <button class="btn btn-primary btn-sm" data-action="cancel" data-id="${e.id}">Mark Done</button>`;
+      <a class="action-link" data-action="snooze" data-id="${e.id}">Snooze</a>
+      <a class="action-link blue" data-action="cust_pending" data-id="${e.id}">Cust-Pending</a>
+      <a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
   }
 
+  const assigneeOptions = state.assignees.map(a => `<option value="${escape(a)}" ${e.assignedTo === a ? 'selected' : ''}>${escape(a)}</option>`).join('');
+  const statusOptions = STATUSES.map(s => `<option value="${s}" ${e.status === s ? 'selected' : ''}>${s}</option>`).join('');
   const assignedDateValue = e.assignedDate || new Date(e.dateEntered).toISOString().slice(0, 10);
 
+  detailsHtml += `
+    <div class="action-row">
+      <div class="flex flex-col gap-1">
+        <span class="meta-label">Assigned To</span>
+        <select data-edit="assignedTo" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${assigneeOptions}</select>
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="meta-label">Date</span>
+        <input type="date" data-edit="assignedDate" data-id="${e.id}" value="${assignedDateValue}" ${isCancelled ? 'disabled' : ''}>
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="meta-label">Status</span>
+        <select data-edit="status" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${statusOptions}</select>
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex gap-4 items-center">${actions}</div>
+    </div>
+  `;
+
   return `
-    <article class="${cardClass} p-4 rounded-sm" data-entry-id="${e.id}">
-      <div class="flex items-start justify-between gap-3 mb-2 flex-wrap">
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 flex-wrap mb-2">
-            <span class="date-stamp ${agingClass}">${formatDate(date)}</span>
-            ${snoozeBadge}
-            ${pendingBadge}
-            ${cancelInfo}
-          </div>
-          <h3 class="font-display text-xl md:text-2xl font-bold strike-line leading-tight">${escape(e.name)}</h3>
-        </div>
-        <div class="flex gap-2 flex-shrink-0 flex-wrap justify-end">${actions}</div>
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 mt-3 pt-3 divider-dashed">
-        <div>
-          <div class="text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-0.5">Customer ID</div>
-          <div class="font-mono text-sm strike-line font-medium">${escape(e.customerId)}</div>
-        </div>
-        <div>
-          <div class="text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-0.5">Account No.</div>
-          <div class="font-mono text-sm strike-line font-medium">${escape(e.accountNumber)}</div>
-        </div>
-        <div>
-          <div class="text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-0.5">Phone</div>
-          <div class="font-mono text-sm strike-line font-medium">
-            ${escape(e.phoneNumber)} ${callLink} ${waLink}
-          </div>
-        </div>
-        <div>
-          <div class="text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-0.5">Status</div>
-          <div><span class="status-pill" style="color: ${statusColor(e.status)}">${escape(e.status)}</span></div>
+    <div class="entry-block ${e.expanded ? 'expanded' : ''} ${isCancelled ? 'cancelled' : ''}" data-entry-id="${e.id}">
+      <div class="entry-summary">
+        <span class="entry-date">${formatTimeShort(date)}</span>
+        <div class="entry-title strike-line">${escape(e.name)}</div>
+        <div class="entry-badges">
+          ${badges}
+          <span class="status-pill" style="color: ${statusColor}">${escape(e.status)}</span>
         </div>
       </div>
-
-      ${e.remarks ? `<p class="text-sm text-[var(--ink-2)] mb-3 strike-line italic leading-relaxed">${escape(e.remarks)}</p>` : ''}
-      ${e.snoozeNote ? `<p class="text-xs text-[var(--amber)] mb-3 italic">◷ ${escape(e.snoozeNote)}</p>` : ''}
-
-      <div class="flex flex-wrap items-end gap-3 pt-3 divider-dashed">
-        <div style="min-width: 140px;">
-          <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Assigned To</label>
-          <select data-edit="assignedTo" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${assigneeOptions}</select>
-        </div>
-        <div style="min-width: 150px;">
-          <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Assigned Date</label>
-          <input type="date" data-edit="assignedDate" data-id="${e.id}" value="${assignedDateValue}" ${isCancelled ? 'disabled' : ''}>
-        </div>
-        <div style="min-width: 160px;">
-          <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Current Status</label>
-          <select data-edit="status" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${statusOptions}</select>
-        </div>
-        <div class="ml-auto text-right">
-          <div class="text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)]">Entered</div>
-          <div class="font-mono text-xs text-[var(--ink-soft)]">${formatTime(date)}</div>
-        </div>
+      <div class="entry-details">
+        ${detailsHtml}
       </div>
-    </article>`;
+    </div>
+  `;
 }
 
-function statusColor(s) {
-  const map = {
-    'Pending': '#a87b1f',
-    'In Progress': '#1a140c',
-    'Follow-up Required': '#8b2635',
-    'Awaiting Docs': '#6b5d48',
-    'Resolved': '#3d5a30',
-    'Escalated': '#8b2635',
-  };
-  return map[s] || '#1a140c';
-}
-
+// ===== Event Handlers =====
 function handleAction(ev) {
+  ev.stopPropagation(); // Prevent toggling expand
   const action = ev.currentTarget.dataset.action;
   const id = ev.currentTarget.dataset.id;
   if (action === 'cancel') cancelEntry(id);
@@ -1160,19 +1006,12 @@ function handleAction(ev) {
   else if (action === 'cust_pending') openPendingCustModal(id);
   else if (action === 'snooze') openSnoozeModal(id);
   else if (action === 'delete') {
-    const entry = state.entries.find(x => x.id === id);
-    if (entry) {
-      showConfirmModal(
-        'Delete Entry Permanently?',
-        `"${entry.name}" will be permanently deleted from the diary. This cannot be undone.`,
-        'Delete',
-        () => deleteEntry(id)
-      );
-    }
+    showConfirmModal('Delete Permanently?', 'This cannot be undone.', () => deleteEntry(id));
   }
 }
 
 function handleEdit(ev) {
+  ev.stopPropagation();
   const field = ev.currentTarget.dataset.edit;
   const id = ev.currentTarget.dataset.id;
   const value = ev.currentTarget.value;
@@ -1183,16 +1022,16 @@ function handleEdit(ev) {
     e.assignedDate = new Date().toISOString().slice(0, 10);
   }
   save();
-  render();
+  // Don't re-render fully to keep dropdown open if needed, just update state
 }
 
-// ===== Snooze Modal =====
+// ===== Modals =====
 let pendingSnoozeId = null;
 function openSnoozeModal(id) {
   pendingSnoozeId = id;
   const e = state.entries.find(x => x.id === id);
   if (!e) return;
-  document.getElementById('snoozeEntryPreview').textContent = `${e.name} • ${e.customerId} • ${e.accountNumber}`;
+  document.getElementById('snoozeEntryPreview').textContent = `${e.name}`;
   const now = new Date();
   now.setMinutes(now.getMinutes() + 60);
   document.getElementById('snoozeDate').value = now.toISOString().slice(0, 10);
@@ -1200,97 +1039,80 @@ function openSnoozeModal(id) {
   document.getElementById('snoozeNote').value = '';
   document.getElementById('snoozeModal').classList.add('show');
 }
-function closeSnoozeModal() {
-  document.getElementById('snoozeModal').classList.remove('show');
-  pendingSnoozeId = null;
-}
+function closeSnoozeModal() { document.getElementById('snoozeModal').classList.remove('show'); pendingSnoozeId = null; }
 function confirmSnooze() {
   if (!pendingSnoozeId) return;
   const dateStr = document.getElementById('snoozeDate').value;
   const timeStr = document.getElementById('snoozeTime').value || '09:00';
   const note = document.getElementById('snoozeNote').value.trim();
-  if (!dateStr) { showToast('Please pick a date'); return; }
+  if (!dateStr) { showToast('Pick a date'); return; }
   const until = new Date(dateStr + 'T' + timeStr + ':00');
-  if (isNaN(until.getTime())) { showToast('Invalid date/time'); return; }
   if (until <= new Date()) { showToast('Pick a future time'); return; }
   snoozeEntry(pendingSnoozeId, until, note);
   closeSnoozeModal();
 }
 
-// ===== Pending Customer Modal =====
 let pendingCustId = null;
 function openPendingCustModal(id) {
   pendingCustId = id;
   const e = state.entries.find(x => x.id === id);
   if (!e) return;
-  document.getElementById('pendingCustEntryPreview').textContent = `${e.name} • ${e.customerId} • ${e.accountNumber}`;
+  document.getElementById('pendingCustEntryPreview').textContent = `${e.name}`;
   document.getElementById('pendingCustNote').value = '';
   document.getElementById('pendingCustModal').classList.add('show');
   setTimeout(() => document.getElementById('pendingCustNote').focus(), 150);
 }
-function closePendingCustModal() {
-  document.getElementById('pendingCustModal').classList.remove('show');
-  pendingCustId = null;
-}
+function closePendingCustModal() { document.getElementById('pendingCustModal').classList.remove('show'); pendingCustId = null; }
 function confirmPendingCust() {
   if (!pendingCustId) return;
   const note = document.getElementById('pendingCustNote').value.trim();
-  if (!note) { showToast('Please enter what you are waiting for'); return; }
+  if (!note) { showToast('Enter what you are waiting for'); return; }
   moveToCustomerPending(pendingCustId, note);
   closePendingCustModal();
 }
 
-// ===== Assignee Modal =====
 function openAssigneeModal() {
   document.getElementById('newAssigneeName').value = '';
   document.getElementById('assigneeModal').classList.add('show');
   setTimeout(() => document.getElementById('newAssigneeName').focus(), 150);
 }
-function closeAssigneeModal() {
-  document.getElementById('assigneeModal').classList.remove('show');
-}
+function closeAssigneeModal() { document.getElementById('assigneeModal').classList.remove('show'); }
 function confirmAssignee() {
   const name = document.getElementById('newAssigneeName').value;
   if (addAssignee(name)) closeAssigneeModal();
 }
 
-// ===== Confirm Modal =====
 let confirmCallback = null;
-function showConfirmModal(title, message, acceptText, callback) {
+function showConfirmModal(title, message, callback) {
   document.getElementById('confirmTitle').textContent = title;
   document.getElementById('confirmMessage').textContent = message;
-  document.getElementById('confirmAcceptBtn').textContent = acceptText;
   confirmCallback = callback;
   document.getElementById('confirmModal').classList.add('show');
 }
-function closeConfirmModal() {
-  document.getElementById('confirmModal').classList.remove('show');
-  confirmCallback = null;
-}
+function closeConfirmModal() { document.getElementById('confirmModal').classList.remove('show'); confirmCallback = null; }
 
 // ===== Utilities =====
 function escape(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 }
 function formatDate(d) {
-  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  return String(d.getDate()).padStart(2,'0') + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 }
-function formatTime(d) {
-  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+function formatTimeShort(d) {
+  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 function formatDateTime(d) {
-  return formatDate(d) + ' ' + formatTime(d);
+  return formatDate(d) + ' ' + formatTimeShort(d);
 }
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => t.classList.remove('show'), 2800);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ===== Event wiring =====
+// ===== Wiring =====
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1302,34 +1124,23 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
 document.getElementById('parseBtn').addEventListener('click', () => {
   const text = document.getElementById('pasteArea').value;
-  if (!text.trim()) { showToast('Nothing to parse'); return; }
-  const { results, skipped } = parseText(text);
-  if (results.length === 0) {
-    showToast('Could not parse. Check format: ID Acct Name Phone Remarks');
-    return;
+  if (!text.trim()) { showToast('Nothing to add'); return; }
+  const results = parseText(text);
+  if (results.length > 0) {
+    addEntries(results);
+    document.getElementById('pasteArea').value = '';
+    showToast(`Added ${results.length} entr${results.length === 1 ? 'y' : 'ies'}`);
   }
-  addEntries(results);
-  document.getElementById('pasteArea').value = '';
-  let msg = `Added ${results.length} entr${results.length === 1 ? 'y' : 'ies'}`;
-  if (skipped.length > 0) msg += ` (${skipped.length} line${skipped.length === 1 ? '' : 's'} skipped)`;
-  showToast(msg);
 });
 
-document.getElementById('clearPasteBtn').addEventListener('click', () => {
-  document.getElementById('pasteArea').value = '';
-});
-
-document.getElementById('searchInput').addEventListener('input', (e) => {
-  state.searchQuery = e.target.value;
-  render();
-});
-document.getElementById('filterAssignee').addEventListener('change', (e) => {
-  state.filterAssignee = e.target.value;
-  render();
+document.getElementById('pasteArea').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    document.getElementById('parseBtn').click();
+  }
 });
 
 document.getElementById('snoozeCancelBtn').addEventListener('click', closeSnoozeModal);
-document.getElementById('snoozeCloseBtn').addEventListener('click', closeSnoozeModal);
 document.getElementById('snoozeConfirmBtn').addEventListener('click', confirmSnooze);
 document.querySelectorAll('[data-snooze-preset]').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -1343,79 +1154,28 @@ document.querySelectorAll('[data-snooze-preset]').forEach(btn => {
 });
 
 document.getElementById('pendingCustCancelBtn').addEventListener('click', closePendingCustModal);
-document.getElementById('pendingCustCloseBtn').addEventListener('click', closePendingCustModal);
 document.getElementById('pendingCustConfirmBtn').addEventListener('click', confirmPendingCust);
-document.getElementById('pendingCustNote').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') confirmPendingCust();
-});
+document.getElementById('pendingCustNote').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmPendingCust(); });
 
 document.getElementById('addAssigneeBtn').addEventListener('click', openAssigneeModal);
 document.getElementById('assigneeCancelBtn').addEventListener('click', closeAssigneeModal);
-document.getElementById('assigneeCloseBtn').addEventListener('click', closeAssigneeModal);
 document.getElementById('assigneeConfirmBtn').addEventListener('click', confirmAssignee);
-document.getElementById('newAssigneeName').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') confirmAssignee();
-});
+document.getElementById('newAssigneeName').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmAssignee(); });
 
 document.getElementById('emailBackupBtn').addEventListener('click', () => clearCancelledEntries());
-
 document.getElementById('confirmCancelBtn').addEventListener('click', closeConfirmModal);
-document.getElementById('confirmAcceptBtn').addEventListener('click', () => {
-  if (confirmCallback) confirmCallback();
-  closeConfirmModal();
-});
-
-document.getElementById('exportBtn').addEventListener('click', () => {
-  const data = JSON.stringify(state, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'branch-diary-' + new Date().toISOString().slice(0,10) + '.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('Exported as JSON');
-});
+document.getElementById('confirmAcceptBtn').addEventListener('click', () => { if (confirmCallback) confirmCallback(); closeConfirmModal(); });
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    closeSnoozeModal();
-    closePendingCustModal();
-    closeAssigneeModal();
-    closeConfirmModal();
+    closeSnoozeModal(); closePendingCustModal(); closeAssigneeModal(); closeConfirmModal();
   }
 });
-document.getElementById('snoozeModal').addEventListener('click', (e) => {
-  if (e.target.id === 'snoozeModal') closeSnoozeModal();
-});
-document.getElementById('pendingCustModal').addEventListener('click', (e) => {
-  if (e.target.id === 'pendingCustModal') closePendingCustModal();
-});
-document.getElementById('assigneeModal').addEventListener('click', (e) => {
-  if (e.target.id === 'assigneeModal') closeAssigneeModal();
-});
-document.getElementById('confirmModal').addEventListener('click', (e) => {
-  if (e.target.id === 'confirmModal') closeConfirmModal();
-});
-
-function updateTodayDate() {
-  const d = new Date();
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('todayDate').textContent = d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-}
-
-function checkSnoozedWakeups() {
-  const woken = checkAndWakeUp();
-  if (woken > 0) render();
-}
 
 // ===== Init =====
 load();
-updateTodayDate();
 render();
-setInterval(checkSnoozedWakeups, 30000);
+setInterval(() => { if (checkAndWakeUp() > 0) render(); }, 30000);
 </script>
 
 </body>
