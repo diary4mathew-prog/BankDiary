@@ -19,15 +19,14 @@
   --rule: #d4c4a3;
   --rule-soft: #e0d2b0;
   --accent: #8b2635;
-  --accent-2: #a8384a;
   --green: #3d5a30;
   --amber: #b8860b;
   --blue: #2e5c8a;
+  --purple: #6b3c8a;
 }
 * { box-sizing: border-box; }
-html, body { height: 100%; }
+html, body { height: 100%; margin: 0; }
 body {
-  margin: 0;
   font-family: 'Newsreader', Georgia, serif;
   color: var(--ink);
   background: var(--paper);
@@ -38,13 +37,11 @@ body {
 .font-display { font-family: 'Fraunces', Georgia, serif; }
 .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-/* --- Diary Header --- */
+/* --- Header --- */
 .header-bar {
   background: var(--paper-2);
   border-bottom: 1px solid var(--rule);
-  position: sticky;
-  top: 0;
-  z-index: 30;
+  position: sticky; top: 0; z-index: 30;
   backdrop-filter: blur(4px);
 }
 .brand-mark {
@@ -56,318 +53,177 @@ body {
   font-size: 18px; border-radius: 2px;
 }
 
+.search-input {
+  font-family: 'Newsreader', serif; background: transparent;
+  border: none; border-bottom: 1px dashed var(--ink-muted);
+  width: 100%; font-size: 14px; color: var(--ink);
+  outline: none; padding: 4px 0; transition: border-color 0.2s;
+}
+.search-input:focus { border-bottom-color: var(--accent); border-bottom-style: solid; }
+
 /* --- Tabs --- */
 .tab-btn {
-  padding: 10px 12px;
-  font-family: 'Fraunces', serif;
-  font-weight: 500; font-size: 14px;
-  color: var(--ink-muted);
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  background: transparent;
-  border-top: none; border-left: none; border-right: none;
+  padding: 10px 12px; font-family: 'Fraunces', serif;
+  font-weight: 500; font-size: 14px; color: var(--ink-muted);
+  border-bottom: 2px solid transparent; cursor: pointer;
+  background: transparent; border-top: none; border-left: none; border-right: none;
 }
 .tab-btn:hover { color: var(--ink); }
 .tab-btn.active { color: var(--ink); border-bottom-color: var(--accent); }
 .tab-btn .count {
-  display: inline-block; margin-left: 6px;
-  padding: 0px 6px; background: var(--rule-soft);
-  border-radius: 999px; font-size: 10px;
+  display: inline-block; margin-left: 6px; padding: 0px 6px;
+  background: var(--rule-soft); border-radius: 999px; font-size: 10px;
   font-family: 'JetBrains Mono', monospace; color: var(--ink-2);
 }
 .tab-btn.active .count { background: var(--accent); color: var(--paper); }
 
-/* --- Top Input Bar --- */
-.input-bar {
-  background: var(--paper);
-  padding: 16px 0;
-  border-bottom: 1px dashed var(--rule);
-}
+/* --- Input Bar --- */
+.input-bar { background: var(--paper); padding: 16px 0; border-bottom: 1px dashed var(--rule); }
 .input-bar textarea {
-  font-family: 'Newsreader', serif;
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed var(--ink-muted);
-  width: 100%;
-  font-size: 16px;
-  color: var(--ink);
-  resize: none;
-  outline: none;
-  padding: 8px 0;
-  transition: border-color 0.2s;
+  font-family: 'Newsreader', serif; background: transparent;
+  border: none; border-bottom: 1px dashed var(--ink-muted);
+  width: 100%; font-size: 16px; color: var(--ink);
+  resize: none; outline: none; padding: 8px 0; transition: border-color 0.2s;
 }
 .input-bar textarea:focus { border-bottom-color: var(--accent); }
 
-/* --- Diary Entries --- */
+/* --- Entries --- */
 .date-header {
-  font-family: 'Fraunces', serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--ink-muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin: 32px 0 16px 0;
-  padding-bottom: 8px;
+  font-family: 'Fraunces', serif; font-weight: 600; font-size: 14px;
+  color: var(--ink-muted); letter-spacing: 0.1em; text-transform: uppercase;
+  margin: 32px 0 16px 0; padding-bottom: 8px;
   border-bottom: 1px solid var(--rule);
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display: flex; align-items: center; gap: 12px;
 }
-.date-header::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: transparent;
-}
+.date-header::after { content: ''; flex: 1; height: 1px; }
 
 .entry-block {
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  border-radius: 4px;
-  padding: 12px 8px;
+  margin-bottom: 8px; cursor: pointer; transition: background 0.2s ease;
+  border-radius: 4px; padding: 12px 8px;
 }
 .entry-block:hover { background: rgba(212, 196, 163, 0.2); }
 .entry-block.expanded { background: rgba(247, 241, 227, 0.8); }
 
-.entry-summary {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.entry-summary { display: flex; align-items: center; gap: 12px; }
 .entry-date {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--ink-muted);
-  min-width: 50px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--ink-muted); min-width: 60px;
+  padding: 2px 6px; border: 1px solid transparent; border-radius: 4px;
+  text-align: center; transition: all 0.3s ease;
 }
+.entry-date.aging-amber { color: var(--amber); border-color: var(--amber); }
+.entry-date.aging-red { color: var(--accent); border-color: var(--accent); animation: pulse-red 2s infinite; }
+
+@keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
 .entry-title {
-  font-family: 'Fraunces', serif;
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--ink);
-  flex: 1;
+  font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500;
+  color: var(--ink); flex: 1; display: flex; align-items: center; gap: 8px;
 }
-.entry-badges {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+.entry-badges { display: flex; gap: 8px; align-items: center; }
 
 .entry-details {
-  max-height: 0;
-  overflow: hidden;
+  max-height: 0; overflow: hidden;
   transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-  padding-left: 62px; /* Align with title */
+  padding-left: 72px; /* Align with title */
 }
-.entry-block.expanded .entry-details {
-  max-height: 500px;
-  padding-top: 16px;
-}
+.entry-block.expanded .entry-details { max-height: 1000px; padding-top: 16px; }
 
-/* --- Text & Elements inside Details --- */
 .detail-text {
-  font-size: 15px;
-  color: var(--ink-2);
-  margin-bottom: 16px;
-  line-height: 1.6;
-  white-space: pre-wrap; /* Preserve newlines in dictated text */
+  font-size: 15px; color: var(--ink-2); margin-bottom: 16px;
+  line-height: 1.6; white-space: pre-wrap; cursor: text;
+  border-radius: 4px; padding: 4px 8px; margin-left: -8px;
+  transition: background 0.2s;
 }
-.meta-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 16px;
-  font-size: 13px;
-  color: var(--ink-soft);
-}
+.detail-text:hover { background: rgba(212, 196, 163, 0.1); }
+.detail-text.editing { background: var(--paper-2); box-shadow: 0 0 0 1px var(--rule); outline: none; }
+
+.meta-grid { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; font-size: 13px; color: var(--ink-soft); }
 .meta-item { display: flex; flex-direction: column; }
-.meta-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--ink-muted);
-  margin-bottom: 2px;
-}
+.meta-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin-bottom: 2px; }
 .meta-value { font-weight: 500; color: var(--ink); }
 
-.action-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  margin-top: 16px;
-  border-top: 1px dashed var(--rule);
-  padding-top: 16px;
-}
+.action-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 16px; border-top: 1px dashed var(--rule); padding-top: 16px; }
 
-.action-link {
-  font-family: 'Fraunces', serif;
-  font-size: 13px;
-  color: var(--ink-soft);
-  cursor: pointer;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: all 0.2s;
-}
+.action-link { font-family: 'Fraunces', serif; font-size: 13px; color: var(--ink-soft); cursor: pointer; text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
 .action-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
-.action-link.danger:hover { color: #8b2635; border-bottom-color: #8b2635; }
+.action-link.danger:hover { color: var(--accent); border-bottom-color: var(--accent); }
 .action-link.blue:hover { color: var(--blue); border-bottom-color: var(--blue); }
 
-/* Custom Selects (No Tech Lines) */
-select, input[type="date"] {
-  font-family: 'Fraunces', serif;
-  font-size: 13px;
-  border: none;
-  background: transparent;
-  color: var(--ink);
+/* Quick Delete Icon */
+.delete-icon {
+  color: var(--ink-muted);
   cursor: pointer;
-  border-bottom: 1px dashed var(--ink-muted);
-  padding: 2px 4px;
-  outline: none;
-  transition: border-color 0.2s;
+  font-size: 14px;
+  margin-left: 8px;
+  transition: color 0.2s;
+}
+.delete-icon:hover { color: var(--accent); }
+
+/* No Tech Lines for Inputs */
+select, input[type="date"] {
+  font-family: 'Fraunces', serif; font-size: 13px; border: none; background: transparent;
+  color: var(--ink); cursor: pointer; border-bottom: 1px dashed var(--ink-muted);
+  padding: 2px 4px; outline: none; transition: border-color 0.2s;
 }
 select:focus, input[type="date"]:focus { border-bottom-color: var(--accent); border-bottom-style: solid; }
 select {
   appearance: none; -webkit-appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2 3l3 3 3-3' stroke='%236b5d48' fill='none' stroke-width='1'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right center;
-  padding-right: 16px;
+  background-repeat: no-repeat; background-position: right center; padding-right: 16px;
 }
 
-/* --- Status & Badges --- */
-.status-pill {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 2px 8px; border-radius: 999px;
-  font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
-  text-transform: uppercase; border: 1px solid currentColor;
-  font-family: 'JetBrains Mono', monospace;
-}
-.status-pill::before {
-  content: ''; width: 4px; height: 4px;
-  background: currentColor; border-radius: 50%;
-}
+.status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid currentColor; font-family: 'JetBrains Mono', monospace; cursor: pointer; transition: transform 0.1s; }
+.status-pill:hover { transform: scale(1.05); }
+.status-pill::before { content: ''; width: 4px; height: 4px; background: currentColor; border-radius: 50%; }
 
-.tag-badge {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; font-weight: 600;
-  padding: 2px 6px; border-radius: 3px;
-  background: var(--rule-soft); color: var(--ink-2);
-}
+.cat-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+.tag-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; background: var(--rule-soft); color: var(--ink-2); }
 .tag-badge.blue { background: rgba(46, 92, 138, 0.15); color: var(--blue); }
 .tag-badge.amber { background: rgba(184, 134, 11, 0.15); color: var(--amber); }
-.tag-badge.red { background: rgba(139, 38, 53, 0.15); color: var(--accent); }
 
-/* --- Strikethrough Animation --- */
 .strike-line { position: relative; display: inline-block; }
-.strike-line::after {
-  content: '';
-  position: absolute;
-  left: -6px; right: -6px; top: 55%;
-  height: 1.5px;
-  background: var(--ink-soft);
-  transform: scaleX(0);
-  transform-origin: left center;
-  border-radius: 1px;
-}
-.cancelled .strike-line::after {
-  animation: draw-strike 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
-}
-@keyframes draw-strike {
-  from { transform: scaleX(0) rotate(-0.2deg); }
-  to   { transform: scaleX(1) rotate(-0.2deg); }
-}
+.strike-line::after { content: ''; position: absolute; left: -6px; right: -6px; top: 55%; height: 1.5px; background: var(--ink-soft); transform: scaleX(0); transform-origin: left center; border-radius: 1px; }
+.cancelled .strike-line::after { animation: draw-strike 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+@keyframes draw-strike { from { transform: scaleX(0) rotate(-0.2deg); } to { transform: scaleX(1) rotate(-0.2deg); } }
 
-/* --- Modals & Toasts --- */
-.modal-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(44, 36, 27, 0.4);
-  backdrop-filter: blur(4px);
-  z-index: 50;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.2s ease;
-  padding: 16px;
-}
+.modal-backdrop { position: fixed; inset: 0; background: rgba(44, 36, 27, 0.4); backdrop-filter: blur(4px); z-index: 50; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; padding: 16px; }
 .modal-backdrop.show { opacity: 1; pointer-events: auto; }
-.modal-card {
-  background: var(--paper);
-  border: 1px solid var(--rule);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  max-width: 400px; width: 100%;
-  padding: 24px;
-  transform: scale(0.95) translateY(8px);
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border-radius: 4px;
-}
+.modal-card { background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-width: 400px; width: 100%; padding: 24px; transform: scale(0.95) translateY(8px); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 4px; }
 .modal-backdrop.show .modal-card { transform: scale(1) translateY(0); }
 
-.toast {
-  position: fixed; bottom: 24px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--ink); color: var(--paper);
-  padding: 10px 20px; border-radius: 3px;
-  font-family: 'Fraunces', serif; font-size: 14px;
-  opacity: 0; pointer-events: none;
-  transition: all 0.3s ease;
-  z-index: 100;
-  max-width: 90%; text-align: center;
-}
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 10px 20px; border-radius: 3px; font-family: 'Fraunces', serif; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 100; max-width: 90%; text-align: center; display: flex; align-items: center; gap: 16px; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast button { background: transparent; border: 1px solid var(--paper); color: var(--paper); padding: 2px 8px; border-radius: 2px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; }
+.toast button:hover { background: var(--paper); color: var(--ink); }
 
-/* Custom inputs inside modals */
-.text-input {
-  font-family: 'Newsreader', serif;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--rule);
-  width: 100%;
-  font-size: 16px;
-  color: var(--ink);
-  padding: 8px 0;
-  outline: none;
-}
+.text-input { font-family: 'Newsreader', serif; background: transparent; border: none; border-bottom: 1px solid var(--rule); width: 100%; font-size: 16px; color: var(--ink); padding: 8px 0; outline: none; }
 .text-input:focus { border-bottom-color: var(--accent); }
 
-.btn {
-  padding: 8px 16px;
-  font-family: 'Fraunces', serif; font-weight: 500;
-  border: 1px solid var(--ink);
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
-  border-radius: 2px; font-size: 14px;
-  transition: all 0.15s ease;
-}
+.btn { padding: 8px 16px; font-family: 'Fraunces', serif; font-weight: 500; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; border-radius: 2px; font-size: 14px; transition: all 0.15s ease; }
 .btn:hover { background: var(--ink); color: var(--paper); }
 .btn-primary { background: var(--ink); color: var(--paper); }
 .btn-primary:hover { background: var(--accent); border-color: var(--accent); }
 .btn-ghost { border-color: transparent; }
 .btn-ghost:hover { background: rgba(212, 196, 163, 0.3); border-color: transparent; color: var(--ink); }
 
-.empty-state {
-  font-family: 'Fraunces', serif; font-style: italic;
-  color: var(--ink-muted); text-align: center;
-  padding: 80px 20px; font-size: 16px;
-}
+.empty-state { font-family: 'Fraunces', serif; font-style: italic; color: var(--ink-muted); text-align: center; padding: 80px 20px; font-size: 16px; }
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+@media print {
+  body { background: white; }
+  .header-bar, .input-bar, .action-row, .entry-badges, .no-print, .delete-icon { display: none !important; }
+  .entry-block { border-bottom: 1px solid #ccc; page-break-inside: avoid; }
+  .entry-details { max-height: none !important; overflow: visible !important; padding-top: 8px !important; }
+  .entry-block.expanded .entry-details { max-height: none !important; }
+  .strike-line::after { transform: scaleX(1) !important; background: black !important; }
 }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <header class="header-bar">
   <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-4">
     <div class="flex items-center gap-3">
@@ -377,12 +233,16 @@ select {
         <p class="text-[10px] text-[var(--ink-muted)] font-mono tracking-wider uppercase">Manager's Ledger</p>
       </div>
     </div>
-    <div class="flex items-center gap-3">
-      <button id="addAssigneeBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors">+ Assignee</button>
-      <button id="emailBackupBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors">Email Backup</button>
+    <div class="flex-1 max-w-xs hidden md:block">
+      <input id="searchInput" class="search-input" placeholder="Search name, account, phone...">
+    </div>
+    <div class="flex items-center gap-4">
+      <button id="printBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors no-print">Print</button>
+      <button id="backupBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors no-print">Backup</button>
+      <button id="addAssigneeBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors no-print">+ Assignee</button>
     </div>
   </div>
-  <div class="max-w-3xl mx-auto px-4 md:px-6 flex overflow-x-auto">
+  <div class="max-w-3xl mx-auto px-4 md:px-6 flex overflow-x-auto no-print">
     <button class="tab-btn active" data-tab="live">Live<span class="count" id="liveCount">0</span></button>
     <button class="tab-btn" data-tab="cust_pending">Cust-Pending<span class="count" id="pendingCustCount">0</span></button>
     <button class="tab-btn" data-tab="snoozed">Snoozed<span class="count" id="snoozedCount">0</span></button>
@@ -390,10 +250,9 @@ select {
   </div>
 </header>
 
-<!-- Top Input Bar -->
-<div class="input-bar">
+<div class="input-bar no-print">
   <div class="max-w-3xl mx-auto px-4 md:px-6">
-    <textarea id="pasteArea" rows="3" placeholder="Write or dictate anything. Use / to separate multiple entries. (Press Ctrl+Enter to add)&#10;&#10;Example: 1042 452110 Rajesh Kumar 9876543210 KYC pending / Remind staff to verify cheques tomorrow"></textarea>
+    <textarea id="pasteArea" rows="3" placeholder="Write or dictate anything. Use / to separate multiple entries.&#10;Example: 1042 452110 Rajesh Kumar 9876543210 KYC pending / Remind staff to verify cheques"></textarea>
     <div class="flex justify-between items-center mt-2">
       <span class="text-[10px] font-mono text-[var(--ink-muted)] uppercase tracking-wider hidden md:block">Press Ctrl+Enter to Add</span>
       <button id="parseBtn" class="btn btn-primary text-sm">Add Entry</button>
@@ -401,7 +260,6 @@ select {
   </div>
 </div>
 
-<!-- Main Diary Area -->
 <main class="max-w-3xl mx-auto w-full px-4 md:px-6 py-6">
   <div id="entriesList"></div>
 </main>
@@ -412,26 +270,15 @@ select {
     <h3 class="font-display text-lg font-bold mb-1">Snooze Entry</h3>
     <p class="text-sm text-[var(--ink-muted)] mb-4" id="snoozeEntryPreview"></p>
     <div class="grid grid-cols-2 gap-3 mb-4">
-      <div>
-        <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Date</label>
-        <input type="date" id="snoozeDate" class="text-input">
-      </div>
-      <div>
-        <label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Time</label>
-        <input type="time" id="snoozeTime" class="text-input">
-      </div>
+      <div><label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Date</label><input type="date" id="snoozeDate" class="text-input"></div>
+      <div><label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Time</label><input type="time" id="snoozeTime" class="text-input"></div>
     </div>
     <div class="flex gap-2 mb-4">
-      <button class="btn btn-ghost text-xs" data-snooze-preset="1">+1h</button>
-      <button class="btn btn-ghost text-xs" data-snooze-preset="4">+4h</button>
-      <button class="btn btn-ghost text-xs" data-snooze-preset="24">Tomorrow</button>
-      <button class="btn btn-ghost text-xs" data-snooze-preset="168">+Week</button>
+      <button class="btn btn-ghost text-xs" data-snooze-preset="1">+1h</button><button class="btn btn-ghost text-xs" data-snooze-preset="4">+4h</button>
+      <button class="btn btn-ghost text-xs" data-snooze-preset="24">Tomorrow</button><button class="btn btn-ghost text-xs" data-snooze-preset="168">+Week</button>
     </div>
     <input type="text" id="snoozeNote" class="text-input mb-6" placeholder="Why are you snoozing?">
-    <div class="flex justify-end gap-2">
-      <button class="btn btn-ghost" id="snoozeCancelBtn">Cancel</button>
-      <button class="btn btn-primary" id="snoozeConfirmBtn">Confirm</button>
-    </div>
+    <div class="flex justify-end gap-2"><button class="btn btn-ghost" id="snoozeCancelBtn">Cancel</button><button class="btn btn-primary" id="snoozeConfirmBtn">Confirm</button></div>
   </div>
 </div>
 
@@ -441,10 +288,7 @@ select {
     <h3 class="font-display text-lg font-bold mb-1">Move to Cust-Pending</h3>
     <p class="text-sm text-[var(--ink-muted)] mb-4" id="pendingCustEntryPreview"></p>
     <input type="text" id="pendingCustNote" class="text-input mb-6" placeholder="What are you waiting for? (e.g. KYC Form)">
-    <div class="flex justify-end gap-2">
-      <button class="btn btn-ghost" id="pendingCustCancelBtn">Cancel</button>
-      <button class="btn btn-primary" id="pendingCustConfirmBtn" style="background: var(--blue); border-color: var(--blue); color: white;">Confirm</button>
-    </div>
+    <div class="flex justify-end gap-2"><button class="btn btn-ghost" id="pendingCustCancelBtn">Cancel</button><button class="btn btn-primary" id="pendingCustConfirmBtn" style="background: var(--blue); border-color: var(--blue); color: white;">Confirm</button></div>
   </div>
 </div>
 
@@ -453,44 +297,48 @@ select {
   <div class="modal-card">
     <h3 class="font-display text-lg font-bold mb-4">Add Assignee</h3>
     <input type="text" id="newAssigneeName" class="text-input mb-6" placeholder="Name (e.g. Anjali)">
-    <div class="flex justify-end gap-2">
-      <button class="btn btn-ghost" id="assigneeCancelBtn">Cancel</button>
-      <button class="btn btn-primary" id="assigneeConfirmBtn">Add</button>
-    </div>
+    <div class="flex justify-end gap-2"><button class="btn btn-ghost" id="assigneeCancelBtn">Cancel</button><button class="btn btn-primary" id="assigneeConfirmBtn">Add</button></div>
   </div>
 </div>
 
-<!-- Confirm Modal -->
-<div class="modal-backdrop" id="confirmModal">
+<!-- Backup Modal -->
+<div class="modal-backdrop" id="backupModal">
   <div class="modal-card">
-    <h3 class="font-display text-lg font-bold mb-2" id="confirmTitle">Are you sure?</h3>
-    <p class="text-sm text-[var(--ink-soft)] mb-6" id="confirmMessage"></p>
-    <div class="flex justify-end gap-2">
-      <button class="btn btn-ghost" id="confirmCancelBtn">Cancel</button>
-      <button class="btn" id="confirmAcceptBtn" style="border-color: var(--accent); color: var(--accent);">Confirm</button>
+    <h3 class="font-display text-lg font-bold mb-4">Diary Backup</h3>
+    <div class="space-y-4">
+      <div>
+        <p class="text-sm text-[var(--ink-soft)] mb-2">Send all cancelled entries to your email app, then clear them from the diary.</p>
+        <button id="emailBackupBtn" class="btn btn-primary w-full">Email & Clear Cancelled</button>
+      </div>
+      <div class="border-t border-dashed border-[var(--rule)] pt-4">
+        <p class="text-sm text-[var(--ink-soft)] mb-2">Download a full backup file of your entire diary (all tabs) to your device.</p>
+        <button id="downloadJsonBtn" class="btn w-full">Download Full Backup (.json)</button>
+      </div>
+      <div class="border-t border-dashed border-[var(--rule)] pt-4">
+        <p class="text-sm text-[var(--ink-soft)] mb-2">Restore a previously saved backup file. This will replace current data.</p>
+        <input type="file" id="uploadJsonInput" accept=".json" style="display:none;">
+        <button id="uploadJsonBtn" class="btn w-full">Restore from Backup</button>
+      </div>
     </div>
+    <div class="flex justify-end mt-6"><button class="btn btn-ghost" id="backupCloseBtn">Close</button></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== State =====
-let state = {
-  entries: [],
-  assignees: ['Unassigned'],
-  currentTab: 'live',
-};
-
+// ===== STATE & PERSISTENCE =====
+let state = { entries: [], assignees: ['Unassigned'], currentTab: 'live', searchQuery: '' };
+let recentlyDeleted = null;
 const STATUSES = ['Pending', 'In Progress', 'Follow-up', 'Awaiting Docs', 'Resolved', 'Escalated'];
 
-// ===== Persistence =====
 function save() {
-  localStorage.setItem('branch_diary_diary_v1', JSON.stringify(state));
+  localStorage.setItem('branch_diary_ultimate_v3', JSON.stringify(state));
 }
+
 function load() {
   try {
-    const raw = localStorage.getItem('branch_diary_diary_v1');
+    const raw = localStorage.getItem('branch_diary_ultimate_v3');
     if (raw) {
       const data = JSON.parse(raw);
       state = { ...state, ...data };
@@ -500,303 +348,250 @@ function load() {
     } else {
       addSampleData();
     }
-  } catch (e) { console.warn('Load failed', e); }
+  } catch (e) {
+    console.warn('Load failed', e);
+  }
 }
 
 function addSampleData() {
   const now = Date.now();
   state.entries = [
-    { id: 'e_s1', customerId: '1042', accountNumber: '452110', name: 'Rajesh Kumar', phoneNumber: '9876543210',
-      remarks: 'KYC documents pending - customer to submit address proof',
-      dateEntered: new Date(now - 3600000).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 3600000).toISOString().slice(0, 10),
-      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
-    
-    { id: 'e_s2', customerId: '', accountNumber: '', name: 'Diary Note', phoneNumber: '',
-      remarks: 'Discussed the new loan policy with the regional manager. Need to update the team by next week. Also need to check if Rajesh submitted his KYC.',
-      dateEntered: new Date(now - 7200000).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 7200000).toISOString().slice(0, 10),
-      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
-      
-    { id: 'e_s3', customerId: '2078', accountNumber: '771032', name: 'Sunita Devi', phoneNumber: '9811022334',
-      remarks: 'Cheque clearance pending - branch visit required',
-      dateEntered: new Date(now - 86400000 * 1).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 1).toISOString().slice(0, 10),
-      status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, 
-      pendingCustomer: true, pendingCustomerDate: new Date(now - 3600000 * 5).toISOString(), pendingCustomerNote: 'Signed Form 60', expanded: false },
-      
-    { id: 'e_s4', customerId: '6789', accountNumber: '554433', name: 'Amit Patel', phoneNumber: '9988776655',
-      remarks: 'Home loan inquiry - sent interest rate details',
-      dateEntered: new Date(now - 86400000 * 2).toISOString(),
-      assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 2).toISOString().slice(0, 10),
-      status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true, cancelledAt: new Date(now - 86400000).toISOString(), pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
+    { id: 'e1', customerId: '1042', accountNumber: '452110', name: 'Rajesh Kumar', phoneNumber: '9876543210', remarks: 'KYC documents pending - customer to submit address proof', dateEntered: new Date(now - 3600000).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 3600000).toISOString().slice(0, 10), status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
+    { id: 'e2', customerId: '', accountNumber: '', name: 'Discussed the new loan policy...', phoneNumber: '', remarks: 'Discussed the new loan policy with the regional manager. Need to update the team by next week.', dateEntered: new Date(now - 7200000).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 7200000).toISOString().slice(0, 10), status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
+    { id: 'e3', customerId: '2078', accountNumber: '771032', name: 'Sunita Devi', phoneNumber: '9811022334', remarks: 'Cheque clearance pending - branch visit required', dateEntered: new Date(now - 86400000 * 1).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 1).toISOString().slice(0, 10), status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: true, pendingCustomerDate: new Date(now - 3600000 * 5).toISOString(), pendingCustomerNote: 'Signed Form 60', expanded: false },
+    { id: 'e4', customerId: '6789', accountNumber: '554433', name: 'Amit Patel', phoneNumber: '9988776655', remarks: 'Home loan inquiry - sent interest rate details', dateEntered: new Date(now - 86400000 * 2).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 2).toISOString().slice(0, 10), status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true, cancelledAt: new Date(now - 86400000).toISOString(), pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
   ];
   save();
 }
 
-// ===== Parser =====
-// Uses '/' to split multiple entries. Handles multiline dictation within a single block.
+// ===== PARSER =====
 function parseText(text) {
-  // Split by '/' to get individual entry blocks
   const blocks = text.split('/');
   const results = [];
-  
   for (const block of blocks) {
-    // Replace newlines with spaces to handle dictation multiline within the same entry
     const normalizedLine = block.replace(/\n/g, ' ').trim();
     if (!normalizedLine) continue;
-    
     const parsed = parseLine(normalizedLine);
     if (parsed) {
       results.push(parsed);
     } else {
-      // Fallback: Add as a diary note
-      results.push({
-        customerId: '', 
-        accountNumber: '', 
-        name: 'Diary Note', 
-        phoneNumber: '', 
-        remarks: normalizedLine 
-      });
+      const words = normalizedLine.split(/\s+/);
+      let title = words.slice(0, 5).join(' ');
+      if (words.length > 5) title += '...';
+      results.push({ customerId: '', accountNumber: '', name: title, phoneNumber: '', remarks: normalizedLine });
     }
   }
   return results;
 }
 
 function parseLine(line) {
-  const trimmed = line.trim();
-  if (!trimmed) return null;
-  const tokens = trimmed.split(/\s+/);
+  const tokens = line.trim().split(/\s+/);
   if (tokens.length < 4) return null;
-
-  const customerId = tokens[0];
-  if (!/^\d{3,}$/.test(customerId)) return null;
-
-  const accountNumber = tokens[1];
-  if (!/^\d{3,}$/.test(accountNumber)) return null;
-
+  if (!/^\d{3,}$/.test(tokens[0])) return null;
+  if (!/^\d{3,}$/.test(tokens[1])) return null;
   let phoneIdx = -1;
   for (let i = 2; i < tokens.length; i++) {
-    if (/^\d{5,}$/.test(tokens[i])) {
-      phoneIdx = i;
-      break;
-    }
+    if (/^\d{5,}$/.test(tokens[i])) { phoneIdx = i; break; }
   }
   if (phoneIdx === -1) return null;
-
   const name = tokens.slice(2, phoneIdx).join(' ');
   if (!name) return null;
-
-  const phoneNumber = tokens[phoneIdx];
-  const remarks = tokens.slice(phoneIdx + 1).join(' ');
-
-  return { customerId, accountNumber, name, phoneNumber, remarks };
+  return { customerId: tokens[0], accountNumber: tokens[1], name, phoneNumber: tokens[phoneIdx], remarks: tokens.slice(phoneIdx + 1).join(' ') };
 }
 
-// ===== Entry management =====
+// ===== ACTIONS =====
 function addEntries(parsedList) {
   const now = new Date();
   const todayStr = now.toISOString().slice(0, 10);
   for (const p of parsedList) {
     state.entries.push({
-      id: 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
-      ...p,
-      dateEntered: now.toISOString(),
-      assignedTo: 'Unassigned',
-      assignedDate: todayStr,
-      status: 'Pending',
-      snoozedUntil: null,
-      snoozeNote: '',
-      cancelled: false,
-      cancelledAt: null,
-      pendingCustomer: false,
-      pendingCustomerDate: null,
-      pendingCustomerNote: '',
-      expanded: false // Default collapsed
+      id: 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8), ...p,
+      dateEntered: now.toISOString(), assignedTo: 'Unassigned', assignedDate: todayStr,
+      status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null,
+      pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false
     });
   }
-  save();
-  render();
+  save(); render();
 }
 
 function toggleExpand(id) {
   const e = state.entries.find(x => x.id === id);
   if (e) {
     e.expanded = !e.expanded;
-    // Direct DOM manipulation for instant feedback without full re-render
     const el = document.querySelector(`[data-entry-id="${id}"]`);
-    if (el) {
-      el.classList.toggle('expanded', e.expanded);
-    } else {
-      render();
-    }
+    if (el) el.classList.toggle('expanded', e.expanded);
+    else render();
+  }
+}
+
+function cycleStatus(id) {
+  const e = state.entries.find(x => x.id === id);
+  if (!e || e.cancelled) return; // Don't cycle if already cancelled
+  
+  const flow = ['Pending', 'In Progress', 'Resolved'];
+  const currentIdx = flow.indexOf(e.status);
+  let nextStatus = flow[(currentIdx + 1) % flow.length];
+  
+  // If status is a custom one like 'Awaiting Docs', default next to 'Pending'
+  if (currentIdx === -1) nextStatus = 'Pending';
+  
+  e.status = nextStatus;
+  
+  if (nextStatus === 'Resolved') {
+    e.cancelled = true;
+    e.cancelledAt = new Date().toISOString();
+  }
+  save(); render();
+}
+
+function deleteEntry(id) {
+  const index = state.entries.findIndex(x => x.id === id);
+  if (index !== -1) {
+    recentlyDeleted = state.entries.splice(index, 1)[0];
+    save(); render();
+    showToast('Entry deleted.', 'Undo', () => {
+      if (recentlyDeleted) {
+        state.entries.push(recentlyDeleted);
+        recentlyDeleted = null;
+        save(); render();
+      }
+    });
   }
 }
 
 function cancelEntry(id) {
   const e = state.entries.find(x => x.id === id);
   if (e) {
-    e.cancelled = true;
-    e.cancelledAt = new Date().toISOString();
-    e.status = 'Resolved';
-    e.snoozedUntil = null;
-    e.snoozeNote = '';
-    e.pendingCustomer = false;
-    e.pendingCustomerNote = '';
-    e.expanded = false;
-    save();
-    render();
-    showToast('Entry marked complete');
+    e.cancelled = true; e.cancelledAt = new Date().toISOString();
+    e.status = 'Resolved'; e.snoozedUntil = null; e.snoozeNote = '';
+    e.pendingCustomer = false; e.pendingCustomerNote = ''; e.expanded = false;
+    save(); render(); showToast('Entry marked complete');
   }
 }
 
 function restoreEntry(id) {
   const e = state.entries.find(x => x.id === id);
   if (e) {
-    e.cancelled = false;
-    e.cancelledAt = null;
-    e.snoozedUntil = null;
-    e.snoozeNote = '';
-    e.pendingCustomer = false;
-    e.pendingCustomerNote = '';
-    e.status = 'Pending';
-    save();
-    render();
-    showToast('Restored to Live');
+    e.cancelled = false; e.cancelledAt = null; e.snoozedUntil = null; e.snoozeNote = '';
+    e.pendingCustomer = false; e.pendingCustomerNote = ''; e.status = 'Pending';
+    save(); render(); showToast('Restored to Live');
   }
 }
 
 function wakeEntry(id) {
   const e = state.entries.find(x => x.id === id);
-  if (e) {
-    e.snoozedUntil = null;
-    e.snoozeNote = '';
-    save();
-    render();
-    showToast('Returned to Live');
-  }
-}
-
-function deleteEntry(id) {
-  state.entries = state.entries.filter(x => x.id !== id);
-  save();
-  render();
-  showToast('Deleted');
+  if (e) { e.snoozedUntil = null; e.snoozeNote = ''; save(); render(); showToast('Returned to Live'); }
 }
 
 function snoozeEntry(id, until, note) {
   const e = state.entries.find(x => x.id === id);
-  if (e) {
-    e.snoozedUntil = until.toISOString();
-    e.snoozeNote = note;
-    e.pendingCustomer = false; 
-    save();
-    render();
-    showToast('Snoozed until ' + formatDateTime(until));
-  }
+  if (e) { e.snoozedUntil = until.toISOString(); e.snoozeNote = note; e.pendingCustomer = false; save(); render(); showToast('Snoozed until ' + formatDateTime(until)); }
 }
 
 function moveToCustomerPending(id, note) {
   const e = state.entries.find(x => x.id === id);
-  if (e) {
-    e.pendingCustomer = true;
-    e.pendingCustomerDate = new Date().toISOString();
-    e.pendingCustomerNote = note;
-    e.snoozedUntil = null; 
-    save();
-    render();
-    showToast('Moved to Cust-Pending');
-  }
+  if (e) { e.pendingCustomer = true; e.pendingCustomerDate = new Date().toISOString(); e.pendingCustomerNote = note; e.snoozedUntil = null; save(); render(); showToast('Moved to Cust-Pending'); }
 }
 
 function restoreFromCustomerPending(id) {
   const e = state.entries.find(x => x.id === id);
-  if (e) {
-    e.pendingCustomer = false;
-    e.pendingCustomerNote = '';
-    save();
-    render();
-    showToast('Followed up — returned to Live');
-  }
+  if (e) { e.pendingCustomer = false; e.pendingCustomerNote = ''; save(); render(); showToast('Followed up — returned to Live'); }
 }
 
-function clearCancelledEntries() {
-  const count = state.entries.filter(e => e.cancelled).length;
-  if (count === 0) {
-    showToast('No cancelled entries to clear.');
-    return;
+function handleEdit(ev) {
+  ev.stopPropagation();
+  const field = ev.currentTarget.dataset.edit;
+  const id = ev.currentTarget.dataset.id;
+  const value = ev.currentTarget.value;
+  const e = state.entries.find(x => x.id === id);
+  if (!e) return;
+  
+  e[field] = value;
+  
+  // Auto-shift tab based on status dropdown change
+  if (field === 'status') {
+    if (value === 'Resolved') {
+      e.cancelled = true;
+      e.cancelledAt = new Date().toISOString();
+    } else {
+      if (e.cancelled) {
+        e.cancelled = false;
+        e.cancelledAt = null;
+      }
+    }
   }
   
+  if (field === 'assignedTo' && value !== 'Unassigned' && !e.assignedDate) {
+    e.assignedDate = new Date().toISOString().slice(0, 10);
+  }
+  save(); render();
+}
+
+// ===== BACKUP & RESTORE =====
+function clearCancelledEntries() {
+  const count = state.entries.filter(e => e.cancelled).length;
+  if (count === 0) { showToast('No cancelled entries to clear.'); return; }
   sendEmailBackup(true);
-  
-  showConfirmModal(
-    'Clear Cancelled Entries?',
-    `${count} entries will be permanently deleted. Ensure your email was sent.`,
-    () => {
-      state.entries = state.entries.filter(e => !e.cancelled);
-      save();
-      render();
-      showToast(`${count} entries cleared.`);
-    }
-  );
+  state.entries = state.entries.filter(e => !e.cancelled);
+  save(); render(); showToast(`${count} entries cleared.`);
 }
 
 function sendEmailBackup(silent = false) {
   const cancelled = state.entries.filter(e => e.cancelled);
-  if (cancelled.length === 0) {
-    if (!silent) showToast('No cancelled entries to backup.');
-    return;
-  }
-
+  if (cancelled.length === 0) { if (!silent) showToast('No cancelled entries to backup.'); return; }
   let body = `BRANCH DIARY BACKUP - ${formatDate(new Date())}\n\n`;
   cancelled.forEach((e, i) => {
     body += `${i + 1}. ${e.name.toUpperCase()}\n`;
     if (e.customerId) body += `   ID: ${e.customerId} | Acct: ${e.accountNumber} | Ph: ${e.phoneNumber}\n`;
-    body += `   Remarks: ${e.remarks || 'N/A'}\n`;
-    body += `   Assigned: ${e.assignedTo} | Status: ${e.status}\n`;
-    body += `   Done: ${formatDateTime(new Date(e.cancelledAt))}\n\n`;
+    body += `   Remarks: ${e.remarks || 'N/A'}\n   Done: ${formatDateTime(new Date(e.cancelledAt))}\n\n`;
   });
-
-  const mailtoLink = `mailto:?subject=${encodeURIComponent('Branch Diary Backup')}&body=${encodeURIComponent(body)}`;
   const a = document.createElement('a');
-  a.href = mailtoLink;
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.href = `mailto:?subject=${encodeURIComponent('Branch Diary Backup')}&body=${encodeURIComponent(body)}`;
+  a.style.display = 'none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function downloadJSON() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'branch-diary-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('Backup downloaded');
+}
+
+function uploadJSON(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.entries && data.assignees) {
+        state = data; save(); render(); showToast('Backup restored successfully'); closeBackupModal();
+      } else { showToast('Invalid backup file'); }
+    } catch (err) { showToast('Error reading file'); }
+  };
+  reader.readAsText(file);
 }
 
 function checkAndWakeUp() {
-  const now = new Date();
-  let woken = 0;
+  const now = new Date(); let woken = 0;
   for (const e of state.entries) {
-    if (e.snoozedUntil && !e.cancelled && !e.pendingCustomer) {
-      if (new Date(e.snoozedUntil) <= now) {
-        e.snoozedUntil = null;
-        e.snoozeNote = '';
-        woken++;
-      }
+    if (e.snoozedUntil && !e.cancelled && !e.pendingCustomer && new Date(e.snoozedUntil) <= now) {
+      e.snoozedUntil = null; e.snoozeNote = ''; woken++;
     }
   }
-  if (woken > 0) {
-    save();
-    showToast(woken + ' snoozed entries returned to Live');
-  }
+  if (woken > 0) { save(); showToast(woken + ' snoozed entries returned to Live'); }
   return woken;
 }
 
-// ===== Assignees =====
 function addAssignee(name) {
   name = name.trim();
   if (!name) { showToast('Enter a name'); return false; }
   if (state.assignees.includes(name)) { showToast('Already exists'); return false; }
-  state.assignees.push(name);
-  save();
-  showToast('Assignee added: ' + name);
-  return true;
+  state.assignees.push(name); save(); showToast('Assignee added: ' + name); return true;
 }
 
-// ===== Filtering & Grouping =====
+// ===== FILTERING & RENDERING =====
 function isVisible(entry, tab) {
   if (tab === 'live') return !entry.cancelled && !entry.snoozedUntil && !entry.pendingCustomer;
   if (tab === 'cust_pending') return !entry.cancelled && entry.pendingCustomer;
@@ -807,60 +602,63 @@ function isVisible(entry, tab) {
 
 function getGroupedEntries() {
   let list = state.entries.filter(e => isVisible(e, state.currentTab));
-  
-  // Sort
-  if (state.currentTab === 'cancelled') {
-    list.sort((a, b) => new Date(b.cancelledAt) - new Date(a.cancelledAt));
-  } else if (state.currentTab === 'snoozed') {
-    list.sort((a, b) => new Date(a.snoozedUntil) - new Date(b.snoozedUntil));
-  } else if (state.currentTab === 'cust_pending') {
-    list.sort((a, b) => new Date(b.pendingCustomerDate) - new Date(a.pendingCustomerDate));
-  } else {
-    list.sort((a, b) => new Date(b.dateEntered) - new Date(a.dateEntered));
+  if (state.searchQuery) {
+    const q = state.searchQuery.toLowerCase();
+    list = list.filter(e => e.name.toLowerCase().includes(q) || e.customerId.includes(q) || e.accountNumber.includes(q) || e.phoneNumber.includes(q) || (e.remarks || '').toLowerCase().includes(q));
   }
+  if (state.currentTab === 'cancelled') list.sort((a, b) => new Date(b.cancelledAt) - new Date(a.cancelledAt));
+  else if (state.currentTab === 'snoozed') list.sort((a, b) => new Date(a.snoozedUntil) - new Date(b.snoozedUntil));
+  else if (state.currentTab === 'cust_pending') list.sort((a, b) => new Date(b.pendingCustomerDate) - new Date(a.pendingCustomerDate));
+  else list.sort((a, b) => new Date(b.dateEntered) - new Date(a.dateEntered));
   
-  // Group by Date
   const groups = {};
   list.forEach(e => {
     let dateKey;
-    if (state.currentTab === 'cancelled' && e.cancelledAt) {
-      dateKey = new Date(e.cancelledAt).toDateString();
-    } else if (state.currentTab === 'cust_pending' && e.pendingCustomerDate) {
-      dateKey = new Date(e.pendingCustomerDate).toDateString();
-    } else {
-      dateKey = new Date(e.dateEntered).toDateString();
-    }
+    if (state.currentTab === 'cancelled' && e.cancelledAt) dateKey = new Date(e.cancelledAt).toDateString();
+    else if (state.currentTab === 'cust_pending' && e.pendingCustomerDate) dateKey = new Date(e.pendingCustomerDate).toDateString();
+    else dateKey = new Date(e.dateEntered).toDateString();
     if (!groups[dateKey]) groups[dateKey] = [];
     groups[dateKey].push(e);
   });
-  
   return groups;
 }
 
-// ===== Render =====
-function render() {
-  const liveCount = state.entries.filter(e => !e.cancelled && !e.snoozedUntil && !e.pendingCustomer).length;
-  const pendingCustCount = state.entries.filter(e => !e.cancelled && e.pendingCustomer).length;
-  const snoozedCount = state.entries.filter(e => !e.cancelled && e.snoozedUntil && !e.pendingCustomer).length;
-  const cancelledCount = state.entries.filter(e => e.cancelled).length;
+function getCategoryTag(remarks) {
+  const r = (remarks || '').toLowerCase();
+  if (r.includes('kyc')) return { color: 'var(--blue)', name: 'KYC' };
+  if (r.includes('cheque')) return { color: 'var(--green)', name: 'Cheque' };
+  if (r.includes('loan')) return { color: 'var(--amber)', name: 'Loan' };
+  if (r.includes('card')) return { color: 'var(--purple)', name: 'Card' };
+  if (r.includes('fd') || r.includes('deposit')) return { color: 'var(--accent)', name: 'Deposit' };
+  return null;
+}
 
-  document.getElementById('liveCount').textContent = liveCount;
-  document.getElementById('pendingCustCount').textContent = pendingCustCount;
-  document.getElementById('snoozedCount').textContent = snoozedCount;
-  document.getElementById('cancelledCount').textContent = cancelledCount;
+function getAgingClass(dateString) {
+  if (!dateString) return '';
+  const ageInDays = (Date.now() - new Date(dateString).getTime()) / (1000 * 60 * 60 * 24);
+  if (ageInDays > 7) return 'aging-red';
+  if (ageInDays > 3) return 'aging-amber';
+  return '';
+}
+
+function render() {
+  document.getElementById('liveCount').textContent = state.entries.filter(e => !e.cancelled && !e.snoozedUntil && !e.pendingCustomer).length;
+  document.getElementById('pendingCustCount').textContent = state.entries.filter(e => !e.cancelled && e.pendingCustomer).length;
+  document.getElementById('snoozedCount').textContent = state.entries.filter(e => !e.cancelled && e.snoozedUntil && !e.pendingCustomer).length;
+  document.getElementById('cancelledCount').textContent = state.entries.filter(e => e.cancelled).length;
 
   const groups = getGroupedEntries();
   const dateKeys = Object.keys(groups);
   const container = document.getElementById('entriesList');
 
   if (dateKeys.length === 0) {
-    const messages = {
-      live: 'No live entries. Write a note above to begin.',
-      cust_pending: 'Nothing pending with customers.',
-      snoozed: 'Nothing snoozed.',
-      cancelled: 'Nothing cancelled yet.',
-    };
-    container.innerHTML = `<div class="empty-state">${messages[state.currentTab]}</div>`;
+    let msg = 'No entries found.';
+    if (state.searchQuery) msg = 'No entries match your search.';
+    else if (state.currentTab === 'live') msg = 'No live entries. Write a note above to begin.';
+    else if (state.currentTab === 'cust_pending') msg = 'Nothing pending with customers.';
+    else if (state.currentTab === 'snoozed') msg = 'Nothing snoozed.';
+    else if (state.currentTab === 'cancelled') msg = 'Nothing cancelled yet.';
+    container.innerHTML = `<div class="empty-state">${msg}</div>`;
     return;
   }
 
@@ -869,40 +667,62 @@ function render() {
     const date = new Date(dateKey);
     const today = new Date(); today.setHours(0,0,0,0);
     const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-    
     let dateLabel;
     if (date.toDateString() === today.toDateString()) dateLabel = 'Today';
     else if (date.toDateString() === yesterday.toDateString()) dateLabel = 'Yesterday';
     else dateLabel = date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
-    
     html += `<div class="date-header"><span>${dateLabel}</span></div>`;
-    
-    for (const e of groups[dateKey]) {
-      html += renderEntry(e);
-    }
+    for (const e of groups[dateKey]) html += renderEntry(e);
   }
-
   container.innerHTML = html;
 
-  // Attach listeners
   container.querySelectorAll('.entry-block').forEach(el => {
     el.addEventListener('click', (ev) => {
-      // Don't toggle if clicking a button, select, or link inside
-      if (ev.target.closest('button, select, input, a, .action-link')) return;
+      if (ev.target.closest('button, select, input, a, .action-link, .detail-text, .status-pill, .delete-icon')) return;
       toggleExpand(el.dataset.entryId);
     });
   });
+  
   container.querySelectorAll('[data-action]').forEach(el => el.addEventListener('click', handleAction));
   container.querySelectorAll('[data-edit]').forEach(el => el.addEventListener('change', handleEdit));
+  container.querySelectorAll('[data-cycle]').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); cycleStatus(el.dataset.cycle); }));
+  container.querySelectorAll('[data-delete]').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); deleteEntry(el.dataset.delete); }));
+  
+  container.querySelectorAll('.detail-text').forEach(el => {
+    el.addEventListener('dblclick', () => {
+      el.setAttribute('contenteditable', 'true');
+      el.classList.add('editing');
+      el.focus();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    });
+    el.addEventListener('blur', () => {
+      el.removeAttribute('contenteditable');
+      el.classList.remove('editing');
+      const id = el.dataset.entryId;
+      const newRemarks = el.innerText.trim();
+      const e = state.entries.find(x => x.id === id);
+      if (e && e.remarks !== newRemarks) {
+        e.remarks = newRemarks;
+        if (!e.customerId) {
+          const words = newRemarks.split(/\s+/);
+          let title = words.slice(0, 5).join(' ');
+          if (words.length > 5) title += '...';
+          e.name = title;
+        }
+        save(); showToast('Details updated'); render();
+      }
+    });
+  });
 }
 
 function renderEntry(e) {
   const date = new Date(e.dateEntered);
-  const isCancelled = e.cancelled;
-  const isSnoozed = !!e.snoozedUntil;
-  const isPendingCust = !!e.pendingCustomer;
-  const isNote = !e.customerId;
-  
+  const isCancelled = e.cancelled, isSnoozed = !!e.snoozedUntil, isPendingCust = !!e.pendingCustomer, isNote = !e.customerId;
   let statusColor = '#6b5d48';
   if (e.status === 'Pending') statusColor = '#b8860b';
   else if (e.status === 'Resolved') statusColor = '#3d5a30';
@@ -912,9 +732,16 @@ function renderEntry(e) {
   if (isSnoozed) badges += `<span class="tag-badge amber">◷ ${formatDateTime(new Date(e.snoozedUntil))}</span>`;
   if (isPendingCust) badges += `<span class="tag-badge blue">◷ Cust: ${escape(e.pendingCustomerNote)}</span>`;
   
+  const cat = getCategoryTag(e.remarks);
+  let catDot = '';
+  if (cat) catDot = `<span class="cat-dot" style="background: ${cat.color};" title="${cat.name}"></span>`;
+
+  let agingClass = '';
+  if (!isCancelled && !isSnoozed && !isPendingCust) {
+    agingClass = getAgingClass(e.dateEntered);
+  }
+
   let detailsHtml = '';
-  
-  // Meta info
   if (!isNote) {
     detailsHtml += `<div class="meta-grid">`;
     detailsHtml += `<div class="meta-item"><span class="meta-label">Cust ID</span><span class="meta-value">${escape(e.customerId)}</span></div>`;
@@ -925,115 +752,63 @@ function renderEntry(e) {
     }
     detailsHtml += `</div>`;
   }
-  
-  detailsHtml += `<div class="detail-text strike-line">${escape(e.remarks)}</div>`;
-  
-  if (isCancelled && e.cancelledAt) {
-    detailsHtml += `<div class="text-xs text-[var(--ink-muted)] font-mono mb-4">Done ${formatDateTime(new Date(e.cancelledAt))}</div>`;
-  }
+  detailsHtml += `<div class="detail-text strike-line" data-entry-id="${e.id}" title="Double-click to edit">${escape(e.remarks)}</div>`;
+  if (isCancelled && e.cancelledAt) detailsHtml += `<div class="text-xs text-[var(--ink-muted)] font-mono mb-4">Done ${formatDateTime(new Date(e.cancelledAt))}</div>`;
 
-  // Actions
   let actions = '';
-  if (isCancelled) {
-    actions = `
-      <a class="action-link" data-action="restore" data-id="${e.id}">Restore</a>
-      <a class="action-link danger" data-action="delete" data-id="${e.id}">Delete Permanently</a>`;
-  } else if (isPendingCust) {
-    actions = `
-      <a class="action-link blue" data-action="restore_cust" data-id="${e.id}">Follow Up (Move to Live)</a>
-      <a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
-  } else if (isSnoozed) {
-    actions = `
-      <a class="action-link" data-action="wake" data-id="${e.id}">Wake Now</a>
-      <a class="action-link blue" data-action="cust_pending" data-id="${e.id}">Cust-Pending</a>
-      <a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
-  } else {
-    actions = `
-      <a class="action-link" data-action="snooze" data-id="${e.id}">Snooze</a>
-      <a class="action-link blue" data-action="cust_pending" data-id="${e.id}">Cust-Pending</a>
-      <a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
-  }
+  if (isCancelled) actions = `<a class="action-link" data-action="restore" data-id="${e.id}">Restore</a>`;
+  else if (isPendingCust) actions = `<a class="action-link blue" data-action="restore_cust" data-id="${e.id}">Follow Up (Move to Live)</a><a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
+  else if (isSnoozed) actions = `<a class="action-link" data-action="wake" data-id="${e.id}">Wake Now</a><a class="action-link blue" data-action="cust_pending" data-id="${e.id}">Cust-Pending</a><a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
+  else actions = `<a class="action-link" data-action="snooze" data-id="${e.id}">Snooze</a><a class="action-link blue" data-action="cust_pending" data-id="${e.id}">Cust-Pending</a><a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
 
   const assigneeOptions = state.assignees.map(a => `<option value="${escape(a)}" ${e.assignedTo === a ? 'selected' : ''}>${escape(a)}</option>`).join('');
   const statusOptions = STATUSES.map(s => `<option value="${s}" ${e.status === s ? 'selected' : ''}>${s}</option>`).join('');
   const assignedDateValue = e.assignedDate || new Date(e.dateEntered).toISOString().slice(0, 10);
 
   detailsHtml += `
-    <div class="action-row">
-      <div class="flex flex-col gap-1">
-        <span class="meta-label">Assigned To</span>
-        <select data-edit="assignedTo" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${assigneeOptions}</select>
-      </div>
-      <div class="flex flex-col gap-1">
-        <span class="meta-label">Date</span>
-        <input type="date" data-edit="assignedDate" data-id="${e.id}" value="${assignedDateValue}" ${isCancelled ? 'disabled' : ''}>
-      </div>
-      <div class="flex flex-col gap-1">
-        <span class="meta-label">Status</span>
-        <select data-edit="status" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${statusOptions}</select>
-      </div>
-      <div class="flex-1"></div>
-      <div class="flex gap-4 items-center">${actions}</div>
+    <div class="action-row no-print">
+      <div class="flex flex-col gap-1"><span class="meta-label">Assigned To</span><select data-edit="assignedTo" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${assigneeOptions}</select></div>
+      <div class="flex flex-col gap-1"><span class="meta-label">Date</span><input type="date" data-edit="assignedDate" data-id="${e.id}" value="${assignedDateValue}" ${isCancelled ? 'disabled' : ''}></div>
+      <div class="flex flex-col gap-1"><span class="meta-label">Status</span><select data-edit="status" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${statusOptions}</select></div>
+      <div class="flex-1"></div><div class="flex gap-4 items-center">${actions}</div>
     </div>
   `;
 
   return `
     <div class="entry-block ${e.expanded ? 'expanded' : ''} ${isCancelled ? 'cancelled' : ''}" data-entry-id="${e.id}">
       <div class="entry-summary">
-        <span class="entry-date">${formatTimeShort(date)}</span>
-        <div class="entry-title strike-line">${escape(e.name)}</div>
+        <span class="entry-date ${agingClass}">${formatTimeShort(date)}</span>
+        <div class="entry-title strike-line">${catDot} ${escape(e.name)}</div>
         <div class="entry-badges">
           ${badges}
-          <span class="status-pill" style="color: ${statusColor}">${escape(e.status)}</span>
+          <span class="status-pill" data-cycle="${e.id}" style="color: ${statusColor}" title="Click to change status">${escape(e.status)}</span>
+          <span class="delete-icon" data-delete="${e.id}" title="Delete entry">✕</span>
         </div>
       </div>
-      <div class="entry-details">
-        ${detailsHtml}
-      </div>
+      <div class="entry-details">${detailsHtml}</div>
     </div>
   `;
 }
 
-// ===== Event Handlers =====
 function handleAction(ev) {
-  ev.stopPropagation(); // Prevent toggling expand
-  const action = ev.currentTarget.dataset.action;
-  const id = ev.currentTarget.dataset.id;
+  ev.stopPropagation();
+  const action = ev.currentTarget.dataset.action, id = ev.currentTarget.dataset.id;
   if (action === 'cancel') cancelEntry(id);
   else if (action === 'restore') restoreEntry(id);
   else if (action === 'restore_cust') restoreFromCustomerPending(id);
   else if (action === 'wake') wakeEntry(id);
   else if (action === 'cust_pending') openPendingCustModal(id);
   else if (action === 'snooze') openSnoozeModal(id);
-  else if (action === 'delete') {
-    showConfirmModal('Delete Permanently?', 'This cannot be undone.', () => deleteEntry(id));
-  }
 }
 
-function handleEdit(ev) {
-  ev.stopPropagation();
-  const field = ev.currentTarget.dataset.edit;
-  const id = ev.currentTarget.dataset.id;
-  const value = ev.currentTarget.value;
-  const e = state.entries.find(x => x.id === id);
-  if (!e) return;
-  e[field] = value;
-  if (field === 'assignedTo' && value !== 'Unassigned' && !e.assignedDate) {
-    e.assignedDate = new Date().toISOString().slice(0, 10);
-  }
-  save();
-  // Don't re-render fully to keep dropdown open if needed, just update state
-}
-
-// ===== Modals =====
+// ===== MODALS =====
 let pendingSnoozeId = null;
 function openSnoozeModal(id) {
   pendingSnoozeId = id;
   const e = state.entries.find(x => x.id === id);
   if (!e) return;
   document.getElementById('snoozeEntryPreview').textContent = `${e.name}`;
-  const now = new Date();
-  now.setMinutes(now.getMinutes() + 60);
+  const now = new Date(); now.setMinutes(now.getMinutes() + 60);
   document.getElementById('snoozeDate').value = now.toISOString().slice(0, 10);
   document.getElementById('snoozeTime').value = now.toTimeString().slice(0, 5);
   document.getElementById('snoozeNote').value = '';
@@ -1048,8 +823,7 @@ function confirmSnooze() {
   if (!dateStr) { showToast('Pick a date'); return; }
   const until = new Date(dateStr + 'T' + timeStr + ':00');
   if (until <= new Date()) { showToast('Pick a future time'); return; }
-  snoozeEntry(pendingSnoozeId, until, note);
-  closeSnoozeModal();
+  snoozeEntry(pendingSnoozeId, until, note); closeSnoozeModal();
 }
 
 let pendingCustId = null;
@@ -1067,8 +841,7 @@ function confirmPendingCust() {
   if (!pendingCustId) return;
   const note = document.getElementById('pendingCustNote').value.trim();
   if (!note) { showToast('Enter what you are waiting for'); return; }
-  moveToCustomerPending(pendingCustId, note);
-  closePendingCustModal();
+  moveToCustomerPending(pendingCustId, note); closePendingCustModal();
 }
 
 function openAssigneeModal() {
@@ -1082,16 +855,10 @@ function confirmAssignee() {
   if (addAssignee(name)) closeAssigneeModal();
 }
 
-let confirmCallback = null;
-function showConfirmModal(title, message, callback) {
-  document.getElementById('confirmTitle').textContent = title;
-  document.getElementById('confirmMessage').textContent = message;
-  confirmCallback = callback;
-  document.getElementById('confirmModal').classList.add('show');
-}
-function closeConfirmModal() { document.getElementById('confirmModal').classList.remove('show'); confirmCallback = null; }
+function openBackupModal() { document.getElementById('backupModal').classList.add('show'); }
+function closeBackupModal() { document.getElementById('backupModal').classList.remove('show'); }
 
-// ===== Utilities =====
+// ===== UTILITIES =====
 function escape(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 }
@@ -1104,22 +871,35 @@ function formatTimeShort(d) {
 function formatDateTime(d) {
   return formatDate(d) + ' ' + formatTimeShort(d);
 }
-function showToast(msg) {
+function showToast(msg, actionText = null, actionCallback = null) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  let html = `<span>${msg}</span>`;
+  if (actionText && actionCallback) {
+    html += `<button id="toastAction">${actionText}</button>`;
+  }
+  t.innerHTML = html;
   t.classList.add('show');
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => t.classList.remove('show'), 2500);
+  if (actionText && actionCallback) {
+    document.getElementById('toastAction').onclick = () => {
+      actionCallback();
+      t.classList.remove('show');
+    };
+  }
+  showToast._t = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-// ===== Wiring =====
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.currentTab = btn.dataset.tab;
-    render();
-  });
+// ===== EVENT WIRING =====
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.currentTab = btn.dataset.tab;
+  render();
+}));
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  state.searchQuery = e.target.value;
+  render();
 });
 
 document.getElementById('parseBtn').addEventListener('click', () => {
@@ -1142,16 +922,14 @@ document.getElementById('pasteArea').addEventListener('keydown', (e) => {
 
 document.getElementById('snoozeCancelBtn').addEventListener('click', closeSnoozeModal);
 document.getElementById('snoozeConfirmBtn').addEventListener('click', confirmSnooze);
-document.querySelectorAll('[data-snooze-preset]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const hours = parseInt(btn.dataset.snoozePreset);
-    const d = new Date();
-    d.setHours(d.getHours() + hours);
-    if (hours === 24 || hours === 168) d.setHours(9, 0, 0, 0);
-    document.getElementById('snoozeDate').value = d.toISOString().slice(0, 10);
-    document.getElementById('snoozeTime').value = d.toTimeString().slice(0, 5);
-  });
-});
+document.querySelectorAll('[data-snooze-preset]').forEach(btn => btn.addEventListener('click', () => {
+  const hours = parseInt(btn.dataset.snoozePreset);
+  const d = new Date();
+  d.setHours(d.getHours() + hours);
+  if (hours === 24 || hours === 168) d.setHours(9, 0, 0, 0);
+  document.getElementById('snoozeDate').value = d.toISOString().slice(0, 10);
+  document.getElementById('snoozeTime').value = d.toTimeString().slice(0, 5);
+}));
 
 document.getElementById('pendingCustCancelBtn').addEventListener('click', closePendingCustModal);
 document.getElementById('pendingCustConfirmBtn').addEventListener('click', confirmPendingCust);
@@ -1162,21 +940,25 @@ document.getElementById('assigneeCancelBtn').addEventListener('click', closeAssi
 document.getElementById('assigneeConfirmBtn').addEventListener('click', confirmAssignee);
 document.getElementById('newAssigneeName').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmAssignee(); });
 
+document.getElementById('backupBtn').addEventListener('click', openBackupModal);
+document.getElementById('backupCloseBtn').addEventListener('click', closeBackupModal);
 document.getElementById('emailBackupBtn').addEventListener('click', () => clearCancelledEntries());
-document.getElementById('confirmCancelBtn').addEventListener('click', closeConfirmModal);
-document.getElementById('confirmAcceptBtn').addEventListener('click', () => { if (confirmCallback) confirmCallback(); closeConfirmModal(); });
+document.getElementById('downloadJsonBtn').addEventListener('click', downloadJSON);
+document.getElementById('uploadJsonBtn').addEventListener('click', () => document.getElementById('uploadJsonInput').click());
+document.getElementById('uploadJsonInput').addEventListener('change', (e) => { if (e.target.files.length > 0) uploadJSON(e.target.files[0]); });
+
+document.getElementById('printBtn').addEventListener('click', () => window.print());
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    closeSnoozeModal(); closePendingCustModal(); closeAssigneeModal(); closeConfirmModal();
+    closeSnoozeModal(); closePendingCustModal(); closeAssigneeModal(); closeBackupModal();
   }
 });
 
-// ===== Init =====
+// ===== INIT =====
 load();
 render();
 setInterval(() => { if (checkAndWakeUp() > 0) render(); }, 30000);
 </script>
-
 </body>
 </html>
