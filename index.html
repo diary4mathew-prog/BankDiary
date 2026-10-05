@@ -23,6 +23,7 @@
   --amber: #b8860b;
   --blue: #2e5c8a;
   --purple: #6b3c8a;
+  --margin-line: #d9b8b8;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
@@ -30,12 +31,39 @@ body {
   font-family: 'Newsreader', Georgia, serif;
   color: var(--ink);
   background: var(--paper);
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0.04 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  /* Ruled paper lines */
+  background-image: 
+    linear-gradient(var(--rule-soft) 1px, transparent 1px),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0.04 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  background-size: 100% 32px, 200px 200px; /* 32px line height */
   min-height: 100vh;
 }
 
 .font-display { font-family: 'Fraunces', Georgia, serif; }
 .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* --- Diary Layout --- */
+.diary-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--paper);
+  border-left: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+  box-shadow: 0 0 40px rgba(0,0,0,0.05);
+  min-height: 100vh;
+  position: relative;
+}
+/* Left red margin line like a notebook */
+.diary-container::before {
+  content: '';
+  position: absolute;
+  left: 60px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--margin-line);
+  opacity: 0.5;
+}
 
 /* --- Header --- */
 .header-bar {
@@ -77,42 +105,66 @@ body {
 }
 .tab-btn.active .count { background: var(--accent); color: var(--paper); }
 
-/* --- Input Bar --- */
-.input-bar { background: var(--paper); padding: 16px 0; border-bottom: 1px dashed var(--rule); }
-.input-bar textarea {
-  font-family: 'Newsreader', serif; background: transparent;
-  border: none; border-bottom: 1px dashed var(--ink-muted);
-  width: 100%; font-size: 16px; color: var(--ink);
-  resize: none; outline: none; padding: 8px 0; transition: border-color 0.2s;
+/* --- Diary Content --- */
+.page-title {
+  font-family: 'Fraunces', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  margin: 40px 0 10px 0;
+  letter-spacing: -0.02em;
 }
-.input-bar textarea:focus { border-bottom-color: var(--accent); }
-
-/* --- Entries --- */
-.date-header {
-  font-family: 'Fraunces', serif; font-weight: 600; font-size: 14px;
-  color: var(--ink-muted); letter-spacing: 0.1em; text-transform: uppercase;
-  margin: 32px 0 16px 0; padding-bottom: 8px;
+.page-subtitle {
+  text-align: center;
+  color: var(--ink-muted);
+  font-style: italic;
+  margin-bottom: 30px;
   border-bottom: 1px solid var(--rule);
-  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 10px;
 }
-.date-header::after { content: ''; flex: 1; height: 1px; }
+
+.date-header {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 32px 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.date-header::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
 
 .entry-block {
-  margin-bottom: 8px; cursor: pointer; transition: background 0.2s ease;
-  border-radius: 4px; padding: 12px 8px;
+  margin-bottom: 0px; /* Sit on the lines */
+  cursor: pointer;
+  transition: background 0.2s ease;
+  padding: 8px 16px 8px 80px; /* Indent past margin line */
+  border-radius: 4px;
 }
-.entry-block:hover { background: rgba(212, 196, 163, 0.2); }
-.entry-block.expanded { background: rgba(247, 241, 227, 0.8); }
+.entry-block:hover { background: rgba(212, 196, 163, 0.15); }
+.entry-block.expanded { background: rgba(247, 241, 227, 0.6); }
 
-.entry-summary { display: flex; align-items: center; gap: 12px; }
-.entry-date {
-  font-family: 'JetBrains Mono', monospace; font-size: 10px;
-  color: var(--ink-muted); min-width: 60px;
-  padding: 2px 6px; border: 1px solid transparent; border-radius: 4px;
-  text-align: center; transition: all 0.3s ease;
+.entry-summary { display: flex; align-items: center; gap: 12px; height: 32px; /* match line height */ }
+.entry-date-stamp {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-muted);
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-align: center;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  transform: rotate(-1deg);
+  background: var(--paper-2);
+  border-color: var(--rule);
 }
-.entry-date.aging-amber { color: var(--amber); border-color: var(--amber); }
-.entry-date.aging-red { color: var(--accent); border-color: var(--accent); animation: pulse-red 2s infinite; }
+.entry-date-stamp.aging-amber { color: var(--amber); border-color: var(--amber); }
+.entry-date-stamp.aging-red { color: var(--accent); border-color: var(--accent); animation: pulse-red 2s infinite; }
 
 @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
@@ -120,20 +172,20 @@ body {
   font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500;
   color: var(--ink); flex: 1; display: flex; align-items: center; gap: 8px;
 }
-.entry-badges { display: flex; gap: 8px; align-items: center; }
+.entry-badges { display: flex; gap: 8px; align-items: center; margin-left: auto; }
 
 .entry-details {
   max-height: 0; overflow: hidden;
   transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-  padding-left: 72px; /* Align with title */
+  padding-left: 112px; /* Align with title stamp */
 }
-.entry-block.expanded .entry-details { max-height: 1000px; padding-top: 16px; }
+.entry-block.expanded .entry-details { max-height: 1000px; padding-top: 12px; padding-bottom: 12px; }
 
 .detail-text {
   font-size: 15px; color: var(--ink-2); margin-bottom: 16px;
   line-height: 1.6; white-space: pre-wrap; cursor: text;
-  border-radius: 4px; padding: 4px 8px; margin-left: -8px;
-  transition: background 0.2s;
+  padding: 4px 8px; margin-left: -8px;
+  border-radius: 4px; transition: background 0.2s;
 }
 .detail-text:hover { background: rgba(212, 196, 163, 0.1); }
 .detail-text.editing { background: var(--paper-2); box-shadow: 0 0 0 1px var(--rule); outline: none; }
@@ -144,23 +196,14 @@ body {
 .meta-value { font-weight: 500; color: var(--ink); }
 
 .action-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 16px; border-top: 1px dashed var(--rule); padding-top: 16px; }
-
 .action-link { font-family: 'Fraunces', serif; font-size: 13px; color: var(--ink-soft); cursor: pointer; text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
 .action-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
 .action-link.danger:hover { color: var(--accent); border-bottom-color: var(--accent); }
 .action-link.blue:hover { color: var(--blue); border-bottom-color: var(--blue); }
 
-/* Quick Delete Icon */
-.delete-icon {
-  color: var(--ink-muted);
-  cursor: pointer;
-  font-size: 14px;
-  margin-left: 8px;
-  transition: color 0.2s;
-}
+.delete-icon { color: var(--ink-muted); cursor: pointer; font-size: 14px; margin-left: 8px; transition: color 0.2s; }
 .delete-icon:hover { color: var(--accent); }
 
-/* No Tech Lines for Inputs */
 select, input[type="date"] {
   font-family: 'Fraunces', serif; font-size: 13px; border: none; background: transparent;
   color: var(--ink); cursor: pointer; border-bottom: 1px dashed var(--ink-muted);
@@ -188,15 +231,11 @@ select {
 .cancelled .strike-line::after { animation: draw-strike 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
 @keyframes draw-strike { from { transform: scaleX(0) rotate(-0.2deg); } to { transform: scaleX(1) rotate(-0.2deg); } }
 
-.modal-backdrop { position: fixed; inset: 0; background: rgba(44, 36, 27, 0.4); backdrop-filter: blur(4px); z-index: 50; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; padding: 16px; }
+/* --- Modals --- */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(44, 36, 27, 0.6); backdrop-filter: blur(4px); z-index: 50; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; padding: 16px; }
 .modal-backdrop.show { opacity: 1; pointer-events: auto; }
-.modal-card { background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-width: 400px; width: 100%; padding: 24px; transform: scale(0.95) translateY(8px); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 4px; }
-.modal-backdrop.show .modal-card { transform: scale(1) translateY(0); }
-
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 10px 20px; border-radius: 3px; font-family: 'Fraunces', serif; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 100; max-width: 90%; text-align: center; display: flex; align-items: center; gap: 16px; }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast button { background: transparent; border: 1px solid var(--paper); color: var(--paper); padding: 2px 8px; border-radius: 2px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; }
-.toast button:hover { background: var(--paper); color: var(--ink); }
+.modal-card { background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-width: 500px; width: 100%; padding: 32px; transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 4px; }
+.modal-backdrop.show .modal-card { transform: translateY(0); }
 
 .text-input { font-family: 'Newsreader', serif; background: transparent; border: none; border-bottom: 1px solid var(--rule); width: 100%; font-size: 16px; color: var(--ink); padding: 8px 0; outline: none; }
 .text-input:focus { border-bottom-color: var(--accent); }
@@ -208,61 +247,89 @@ select {
 .btn-ghost { border-color: transparent; }
 .btn-ghost:hover { background: rgba(212, 196, 163, 0.3); border-color: transparent; color: var(--ink); }
 
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  background: var(--accent);
+  color: var(--paper);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(139, 38, 53, 0.4);
+  cursor: pointer;
+  border: none;
+  z-index: 40;
+  transition: transform 0.2s, background 0.2s;
+}
+.fab:hover { transform: scale(1.1); background: var(--ink); }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 10px 20px; border-radius: 3px; font-family: 'Fraunces', serif; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 100; max-width: 90%; text-align: center; display: flex; align-items: center; gap: 16px; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast button { background: transparent; border: 1px solid var(--paper); color: var(--paper); padding: 2px 8px; border-radius: 2px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; }
+.toast button:hover { background: var(--paper); color: var(--ink); }
+
 .empty-state { font-family: 'Fraunces', serif; font-style: italic; color: var(--ink-muted); text-align: center; padding: 80px 20px; font-size: 16px; }
 ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
 
-@media print {
-  body { background: white; }
-  .header-bar, .input-bar, .action-row, .entry-badges, .no-print, .delete-icon { display: none !important; }
-  .entry-block { border-bottom: 1px solid #ccc; page-break-inside: avoid; }
-  .entry-details { max-height: none !important; overflow: visible !important; padding-top: 8px !important; }
-  .entry-block.expanded .entry-details { max-height: none !important; }
-  .strike-line::after { transform: scaleX(1) !important; background: black !important; }
-}
+@media print { /* Print completely removed from UI, but kept here just in case you ever hit Ctrl+P */ body { background: white; } .header-bar, .fab, .action-row, .entry-badges, .delete-icon { display: none !important; } .diary-container { box-shadow: none; border: none; max-width: 100%; } .entry-block { border-bottom: 1px solid #ccc; page-break-inside: avoid; } .entry-details { max-height: none !important; overflow: visible !important; padding-top: 8px !important; } .strike-line::after { transform: scaleX(1) !important; background: black !important; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 </style>
 </head>
 <body>
 
-<header class="header-bar">
-  <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-4">
-    <div class="flex items-center gap-3">
-      <div class="brand-mark">B</div>
-      <div>
-        <h1 class="font-display text-lg md:text-xl font-bold leading-tight">Branch Diary</h1>
-        <p class="text-[10px] text-[var(--ink-muted)] font-mono tracking-wider uppercase">Manager's Ledger</p>
+<div class="diary-container">
+  <header class="header-bar">
+    <div class="px-4 md:px-6 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="brand-mark">B</div>
+        <div>
+          <h1 class="font-display text-lg md:text-xl font-bold leading-tight">Branch Diary</h1>
+          <p class="text-[10px] text-[var(--ink-muted)] font-mono tracking-wider uppercase">Manager's Ledger</p>
+        </div>
+      </div>
+      <div class="flex-1 max-w-xs hidden md:block">
+        <input id="searchInput" class="search-input" placeholder="Search name, account, phone...">
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="backupBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors">Backup</button>
+        <button id="addAssigneeBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors">+ Assignee</button>
       </div>
     </div>
-    <div class="flex-1 max-w-xs hidden md:block">
-      <input id="searchInput" class="search-input" placeholder="Search name, account, phone...">
+    <div class="px-4 md:px-6 flex overflow-x-auto">
+      <button class="tab-btn active" data-tab="live">Live<span class="count" id="liveCount">0</span></button>
+      <button class="tab-btn" data-tab="cust_pending">Cust-Pending<span class="count" id="pendingCustCount">0</span></button>
+      <button class="tab-btn" data-tab="snoozed">Snoozed<span class="count" id="snoozedCount">0</span></button>
+      <button class="tab-btn" data-tab="cancelled">Archive<span class="count" id="cancelledCount">0</span></button>
     </div>
-    <div class="flex items-center gap-4">
-      <button id="printBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors no-print">Print</button>
-      <button id="backupBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors no-print">Backup</button>
-      <button id="addAssigneeBtn" class="text-xs text-[var(--ink-muted)] hover:text-[var(--accent)] font-medium transition-colors no-print">+ Assignee</button>
-    </div>
-  </div>
-  <div class="max-w-3xl mx-auto px-4 md:px-6 flex overflow-x-auto no-print">
-    <button class="tab-btn active" data-tab="live">Live<span class="count" id="liveCount">0</span></button>
-    <button class="tab-btn" data-tab="cust_pending">Cust-Pending<span class="count" id="pendingCustCount">0</span></button>
-    <button class="tab-btn" data-tab="snoozed">Snoozed<span class="count" id="snoozedCount">0</span></button>
-    <button class="tab-btn" data-tab="cancelled">Cancelled<span class="count" id="cancelledCount">0</span></button>
-  </div>
-</header>
+  </header>
 
-<div class="input-bar no-print">
-  <div class="max-w-3xl mx-auto px-4 md:px-6">
-    <textarea id="pasteArea" rows="3" placeholder="Write or dictate anything. Use / to separate multiple entries.&#10;Example: 1042 452110 Rajesh Kumar 9876543210 KYC pending / Remind staff to verify cheques"></textarea>
-    <div class="flex justify-between items-center mt-2">
-      <span class="text-[10px] font-mono text-[var(--ink-muted)] uppercase tracking-wider hidden md:block">Press Ctrl+Enter to Add</span>
-      <button id="parseBtn" class="btn btn-primary text-sm">Add Entry</button>
+  <main class="px-4 md:px-6 py-6 pb-24">
+    <h2 id="pageTitle" class="page-title">Today's Diary</h2>
+    <p id="pageSubtitle" class="page-subtitle">All active tasks carried forward to today</p>
+    <div id="entriesList"></div>
+  </main>
+</div>
+
+<button class="fab" id="addEntryBtn" title="Add New Entry">+</button>
+
+<!-- Add Entry Modal -->
+<div class="modal-backdrop" id="entryModal">
+  <div class="modal-card">
+    <h3 class="font-display text-xl font-bold mb-1">New Diary Entry</h3>
+    <p class="text-sm text-[var(--ink-muted)] mb-6">Write or dictate anything. Use / to separate multiple entries.</p>
+    <textarea id="pasteArea" rows="4" class="text-input mb-6" style="border: 1px solid var(--rule); padding: 12px; border-radius: 4px; resize: vertical;" placeholder="1042 452110 Rajesh Kumar 9876543210 KYC pending / Remind staff to verify cheques"></textarea>
+    <div class="flex justify-end gap-2">
+      <button class="btn btn-ghost" id="entryCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="entrySaveBtn">Add to Diary</button>
     </div>
   </div>
 </div>
-
-<main class="max-w-3xl mx-auto w-full px-4 md:px-6 py-6">
-  <div id="entriesList"></div>
-</main>
 
 <!-- Snooze Modal -->
 <div class="modal-backdrop" id="snoozeModal">
@@ -274,8 +341,7 @@ select {
       <div><label class="block text-[10px] uppercase tracking-wider font-mono text-[var(--ink-muted)] mb-1">Time</label><input type="time" id="snoozeTime" class="text-input"></div>
     </div>
     <div class="flex gap-2 mb-4">
-      <button class="btn btn-ghost text-xs" data-snooze-preset="1">+1h</button><button class="btn btn-ghost text-xs" data-snooze-preset="4">+4h</button>
-      <button class="btn btn-ghost text-xs" data-snooze-preset="24">Tomorrow</button><button class="btn btn-ghost text-xs" data-snooze-preset="168">+Week</button>
+      <button class="btn btn-ghost text-xs" data-snooze-preset="24">Tomorrow 9AM</button><button class="btn btn-ghost text-xs" data-snooze-preset="168">Next Week</button>
     </div>
     <input type="text" id="snoozeNote" class="text-input mb-6" placeholder="Why are you snoozing?">
     <div class="flex justify-end gap-2"><button class="btn btn-ghost" id="snoozeCancelBtn">Cancel</button><button class="btn btn-primary" id="snoozeConfirmBtn">Confirm</button></div>
@@ -308,10 +374,10 @@ select {
     <div class="space-y-4">
       <div>
         <p class="text-sm text-[var(--ink-soft)] mb-2">Send all cancelled entries to your email app, then clear them from the diary.</p>
-        <button id="emailBackupBtn" class="btn btn-primary w-full">Email & Clear Cancelled</button>
+        <button id="emailBackupBtn" class="btn btn-primary w-full">Email & Clear Archive</button>
       </div>
       <div class="border-t border-dashed border-[var(--rule)] pt-4">
-        <p class="text-sm text-[var(--ink-soft)] mb-2">Download a full backup file of your entire diary (all tabs) to your device.</p>
+        <p class="text-sm text-[var(--ink-soft)] mb-2">Download a full backup file of your entire diary to your device.</p>
         <button id="downloadJsonBtn" class="btn w-full">Download Full Backup (.json)</button>
       </div>
       <div class="border-t border-dashed border-[var(--rule)] pt-4">
@@ -327,44 +393,34 @@ select {
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== STATE & PERSISTENCE =====
 let state = { entries: [], assignees: ['Unassigned'], currentTab: 'live', searchQuery: '' };
 let recentlyDeleted = null;
 const STATUSES = ['Pending', 'In Progress', 'Follow-up', 'Awaiting Docs', 'Resolved', 'Escalated'];
 
-function save() {
-  localStorage.setItem('branch_diary_ultimate_v3', JSON.stringify(state));
-}
-
+function save() { localStorage.setItem('branch_diary_diary_v4', JSON.stringify(state)); }
 function load() {
   try {
-    const raw = localStorage.getItem('branch_diary_ultimate_v3');
+    const raw = localStorage.getItem('branch_diary_diary_v4');
     if (raw) {
-      const data = JSON.parse(raw);
-      state = { ...state, ...data };
+      const data = JSON.parse(raw); state = { ...state, ...data };
       if (!state.assignees || state.assignees.length === 0) state.assignees = ['Unassigned'];
       if (!state.assignees.includes('Unassigned')) state.assignees.unshift('Unassigned');
       if (!state.entries) state.entries = [];
-    } else {
-      addSampleData();
-    }
-  } catch (e) {
-    console.warn('Load failed', e);
-  }
+    } else { addSampleData(); }
+  } catch (e) { console.warn('Load failed', e); }
 }
 
 function addSampleData() {
   const now = Date.now();
   state.entries = [
     { id: 'e1', customerId: '1042', accountNumber: '452110', name: 'Rajesh Kumar', phoneNumber: '9876543210', remarks: 'KYC documents pending - customer to submit address proof', dateEntered: new Date(now - 3600000).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 3600000).toISOString().slice(0, 10), status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
-    { id: 'e2', customerId: '', accountNumber: '', name: 'Discussed the new loan policy...', phoneNumber: '', remarks: 'Discussed the new loan policy with the regional manager. Need to update the team by next week.', dateEntered: new Date(now - 7200000).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 7200000).toISOString().slice(0, 10), status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
+    { id: 'e2', customerId: '', accountNumber: '', name: 'Discussed the new loan policy...', phoneNumber: '', remarks: 'Discussed the new loan policy with the regional manager. Need to update the team by next week.', dateEntered: new Date(now - 86400000 * 2).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 2).toISOString().slice(0, 10), status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
     { id: 'e3', customerId: '2078', accountNumber: '771032', name: 'Sunita Devi', phoneNumber: '9811022334', remarks: 'Cheque clearance pending - branch visit required', dateEntered: new Date(now - 86400000 * 1).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 1).toISOString().slice(0, 10), status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: true, pendingCustomerDate: new Date(now - 3600000 * 5).toISOString(), pendingCustomerNote: 'Signed Form 60', expanded: false },
-    { id: 'e4', customerId: '6789', accountNumber: '554433', name: 'Amit Patel', phoneNumber: '9988776655', remarks: 'Home loan inquiry - sent interest rate details', dateEntered: new Date(now - 86400000 * 2).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 2).toISOString().slice(0, 10), status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true, cancelledAt: new Date(now - 86400000).toISOString(), pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
+    { id: 'e4', customerId: '6789', accountNumber: '554433', name: 'Amit Patel', phoneNumber: '9988776655', remarks: 'Home loan inquiry - sent interest rate details', dateEntered: new Date(now - 86400000 * 3).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 3).toISOString().slice(0, 10), status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true, cancelledAt: new Date(now - 86400000 * 1).toISOString(), pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
   ];
   save();
 }
 
-// ===== PARSER =====
 function parseText(text) {
   const blocks = text.split('/');
   const results = [];
@@ -390,16 +446,13 @@ function parseLine(line) {
   if (!/^\d{3,}$/.test(tokens[0])) return null;
   if (!/^\d{3,}$/.test(tokens[1])) return null;
   let phoneIdx = -1;
-  for (let i = 2; i < tokens.length; i++) {
-    if (/^\d{5,}$/.test(tokens[i])) { phoneIdx = i; break; }
-  }
+  for (let i = 2; i < tokens.length; i++) if (/^\d{5,}$/.test(tokens[i])) { phoneIdx = i; break; }
   if (phoneIdx === -1) return null;
   const name = tokens.slice(2, phoneIdx).join(' ');
   if (!name) return null;
   return { customerId: tokens[0], accountNumber: tokens[1], name, phoneNumber: tokens[phoneIdx], remarks: tokens.slice(phoneIdx + 1).join(' ') };
 }
 
-// ===== ACTIONS =====
 function addEntries(parsedList) {
   const now = new Date();
   const todayStr = now.toISOString().slice(0, 10);
@@ -416,31 +469,18 @@ function addEntries(parsedList) {
 
 function toggleExpand(id) {
   const e = state.entries.find(x => x.id === id);
-  if (e) {
-    e.expanded = !e.expanded;
-    const el = document.querySelector(`[data-entry-id="${id}"]`);
-    if (el) el.classList.toggle('expanded', e.expanded);
-    else render();
-  }
+  if (e) { e.expanded = !e.expanded; const el = document.querySelector(`[data-entry-id="${id}"]`); if (el) el.classList.toggle('expanded', e.expanded); else render(); }
 }
 
 function cycleStatus(id) {
   const e = state.entries.find(x => x.id === id);
-  if (!e || e.cancelled) return; // Don't cycle if already cancelled
-  
+  if (!e || e.cancelled) return;
   const flow = ['Pending', 'In Progress', 'Resolved'];
   const currentIdx = flow.indexOf(e.status);
   let nextStatus = flow[(currentIdx + 1) % flow.length];
-  
-  // If status is a custom one like 'Awaiting Docs', default next to 'Pending'
   if (currentIdx === -1) nextStatus = 'Pending';
-  
   e.status = nextStatus;
-  
-  if (nextStatus === 'Resolved') {
-    e.cancelled = true;
-    e.cancelledAt = new Date().toISOString();
-  }
+  if (nextStatus === 'Resolved') { e.cancelled = true; e.cancelledAt = new Date().toISOString(); }
   save(); render();
 }
 
@@ -449,85 +489,31 @@ function deleteEntry(id) {
   if (index !== -1) {
     recentlyDeleted = state.entries.splice(index, 1)[0];
     save(); render();
-    showToast('Entry deleted.', 'Undo', () => {
-      if (recentlyDeleted) {
-        state.entries.push(recentlyDeleted);
-        recentlyDeleted = null;
-        save(); render();
-      }
-    });
+    showToast('Entry deleted.', 'Undo', () => { if (recentlyDeleted) { state.entries.push(recentlyDeleted); recentlyDeleted = null; save(); render(); } });
   }
 }
 
-function cancelEntry(id) {
-  const e = state.entries.find(x => x.id === id);
-  if (e) {
-    e.cancelled = true; e.cancelledAt = new Date().toISOString();
-    e.status = 'Resolved'; e.snoozedUntil = null; e.snoozeNote = '';
-    e.pendingCustomer = false; e.pendingCustomerNote = ''; e.expanded = false;
-    save(); render(); showToast('Entry marked complete');
-  }
-}
-
-function restoreEntry(id) {
-  const e = state.entries.find(x => x.id === id);
-  if (e) {
-    e.cancelled = false; e.cancelledAt = null; e.snoozedUntil = null; e.snoozeNote = '';
-    e.pendingCustomer = false; e.pendingCustomerNote = ''; e.status = 'Pending';
-    save(); render(); showToast('Restored to Live');
-  }
-}
-
-function wakeEntry(id) {
-  const e = state.entries.find(x => x.id === id);
-  if (e) { e.snoozedUntil = null; e.snoozeNote = ''; save(); render(); showToast('Returned to Live'); }
-}
-
-function snoozeEntry(id, until, note) {
-  const e = state.entries.find(x => x.id === id);
-  if (e) { e.snoozedUntil = until.toISOString(); e.snoozeNote = note; e.pendingCustomer = false; save(); render(); showToast('Snoozed until ' + formatDateTime(until)); }
-}
-
-function moveToCustomerPending(id, note) {
-  const e = state.entries.find(x => x.id === id);
-  if (e) { e.pendingCustomer = true; e.pendingCustomerDate = new Date().toISOString(); e.pendingCustomerNote = note; e.snoozedUntil = null; save(); render(); showToast('Moved to Cust-Pending'); }
-}
-
-function restoreFromCustomerPending(id) {
-  const e = state.entries.find(x => x.id === id);
-  if (e) { e.pendingCustomer = false; e.pendingCustomerNote = ''; save(); render(); showToast('Followed up — returned to Live'); }
-}
+function cancelEntry(id) { const e = state.entries.find(x => x.id === id); if (e) { e.cancelled = true; e.cancelledAt = new Date().toISOString(); e.status = 'Resolved'; e.snoozedUntil = null; e.snoozeNote = ''; e.pendingCustomer = false; e.pendingCustomerNote = ''; e.expanded = false; save(); render(); showToast('Entry marked complete'); } }
+function restoreEntry(id) { const e = state.entries.find(x => x.id === id); if (e) { e.cancelled = false; e.cancelledAt = null; e.snoozedUntil = null; e.snoozeNote = ''; e.pendingCustomer = false; e.pendingCustomerNote = ''; e.status = 'Pending'; save(); render(); showToast('Restored to Live'); } }
+function wakeEntry(id) { const e = state.entries.find(x => x.id === id); if (e) { e.snoozedUntil = null; e.snoozeNote = ''; save(); render(); showToast('Returned to Live'); } }
+function snoozeEntry(id, until, note) { const e = state.entries.find(x => x.id === id); if (e) { e.snoozedUntil = until.toISOString(); e.snoozeNote = note; e.pendingCustomer = false; save(); render(); showToast('Snoozed until ' + formatDateTime(until)); } }
+function moveToCustomerPending(id, note) { const e = state.entries.find(x => x.id === id); if (e) { e.pendingCustomer = true; e.pendingCustomerDate = new Date().toISOString(); e.pendingCustomerNote = note; e.snoozedUntil = null; save(); render(); showToast('Moved to Cust-Pending'); } }
+function restoreFromCustomerPending(id) { const e = state.entries.find(x => x.id === id); if (e) { e.pendingCustomer = false; e.pendingCustomerNote = ''; save(); render(); showToast('Followed up — returned to Live'); } }
 
 function handleEdit(ev) {
   ev.stopPropagation();
-  const field = ev.currentTarget.dataset.edit;
-  const id = ev.currentTarget.dataset.id;
-  const value = ev.currentTarget.value;
+  const field = ev.currentTarget.dataset.edit, id = ev.currentTarget.dataset.id, value = ev.currentTarget.value;
   const e = state.entries.find(x => x.id === id);
   if (!e) return;
-  
   e[field] = value;
-  
-  // Auto-shift tab based on status dropdown change
   if (field === 'status') {
-    if (value === 'Resolved') {
-      e.cancelled = true;
-      e.cancelledAt = new Date().toISOString();
-    } else {
-      if (e.cancelled) {
-        e.cancelled = false;
-        e.cancelledAt = null;
-      }
-    }
+    if (value === 'Resolved') { e.cancelled = true; e.cancelledAt = new Date().toISOString(); } 
+    else { e.cancelled = false; e.cancelledAt = null; }
   }
-  
-  if (field === 'assignedTo' && value !== 'Unassigned' && !e.assignedDate) {
-    e.assignedDate = new Date().toISOString().slice(0, 10);
-  }
+  if (field === 'assignedTo' && value !== 'Unassigned' && !e.assignedDate) e.assignedDate = new Date().toISOString().slice(0, 10);
   save(); render();
 }
 
-// ===== BACKUP & RESTORE =====
 function clearCancelledEntries() {
   const count = state.entries.filter(e => e.cancelled).length;
   if (count === 0) { showToast('No cancelled entries to clear.'); return; }
@@ -540,23 +526,15 @@ function sendEmailBackup(silent = false) {
   const cancelled = state.entries.filter(e => e.cancelled);
   if (cancelled.length === 0) { if (!silent) showToast('No cancelled entries to backup.'); return; }
   let body = `BRANCH DIARY BACKUP - ${formatDate(new Date())}\n\n`;
-  cancelled.forEach((e, i) => {
-    body += `${i + 1}. ${e.name.toUpperCase()}\n`;
-    if (e.customerId) body += `   ID: ${e.customerId} | Acct: ${e.accountNumber} | Ph: ${e.phoneNumber}\n`;
-    body += `   Remarks: ${e.remarks || 'N/A'}\n   Done: ${formatDateTime(new Date(e.cancelledAt))}\n\n`;
-  });
-  const a = document.createElement('a');
-  a.href = `mailto:?subject=${encodeURIComponent('Branch Diary Backup')}&body=${encodeURIComponent(body)}`;
-  a.style.display = 'none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  cancelled.forEach((e, i) => { body += `${i + 1}. ${e.name.toUpperCase()}\n`; if (e.customerId) body += `   ID: ${e.customerId} | Acct: ${e.accountNumber} | Ph: ${e.phoneNumber}\n`; body += `   Remarks: ${e.remarks || 'N/A'}\n   Done: ${formatDateTime(new Date(e.cancelledAt))}\n\n`; });
+  const a = document.createElement('a'); a.href = `mailto:?subject=${encodeURIComponent('Branch Diary Backup')}&body=${encodeURIComponent(body)}`; a.style.display = 'none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
 function downloadJSON() {
   const data = JSON.stringify(state, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'branch-diary-backup-' + new Date().toISOString().slice(0,10) + '.json';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  const a = document.createElement('a'); a.href = url; a.download = 'branch-diary-backup-' + new Date().toISOString().slice(0,10) + '.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   showToast('Backup downloaded');
 }
 
@@ -565,9 +543,8 @@ function uploadJSON(file) {
   reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      if (data.entries && data.assignees) {
-        state = data; save(); render(); showToast('Backup restored successfully'); closeBackupModal();
-      } else { showToast('Invalid backup file'); }
+      if (data.entries && data.assignees) { state = data; save(); render(); showToast('Backup restored successfully'); closeBackupModal(); }
+      else { showToast('Invalid backup file'); }
     } catch (err) { showToast('Error reading file'); }
   };
   reader.readAsText(file);
@@ -575,11 +552,7 @@ function uploadJSON(file) {
 
 function checkAndWakeUp() {
   const now = new Date(); let woken = 0;
-  for (const e of state.entries) {
-    if (e.snoozedUntil && !e.cancelled && !e.pendingCustomer && new Date(e.snoozedUntil) <= now) {
-      e.snoozedUntil = null; e.snoozeNote = ''; woken++;
-    }
-  }
+  for (const e of state.entries) { if (e.snoozedUntil && !e.cancelled && !e.pendingCustomer && new Date(e.snoozedUntil) <= now) { e.snoozedUntil = null; e.snoozeNote = ''; woken++; } }
   if (woken > 0) { save(); showToast(woken + ' snoozed entries returned to Live'); }
   return woken;
 }
@@ -591,7 +564,6 @@ function addAssignee(name) {
   state.assignees.push(name); save(); showToast('Assignee added: ' + name); return true;
 }
 
-// ===== FILTERING & RENDERING =====
 function isVisible(entry, tab) {
   if (tab === 'live') return !entry.cancelled && !entry.snoozedUntil && !entry.pendingCustomer;
   if (tab === 'cust_pending') return !entry.cancelled && entry.pendingCustomer;
@@ -606,20 +578,32 @@ function getGroupedEntries() {
     const q = state.searchQuery.toLowerCase();
     list = list.filter(e => e.name.toLowerCase().includes(q) || e.customerId.includes(q) || e.accountNumber.includes(q) || e.phoneNumber.includes(q) || (e.remarks || '').toLowerCase().includes(q));
   }
-  if (state.currentTab === 'cancelled') list.sort((a, b) => new Date(b.cancelledAt) - new Date(a.cancelledAt));
-  else if (state.currentTab === 'snoozed') list.sort((a, b) => new Date(a.snoozedUntil) - new Date(b.snoozedUntil));
-  else if (state.currentTab === 'cust_pending') list.sort((a, b) => new Date(b.pendingCustomerDate) - new Date(a.pendingCustomerDate));
-  else list.sort((a, b) => new Date(b.dateEntered) - new Date(a.dateEntered));
-  
+
   const groups = {};
-  list.forEach(e => {
-    let dateKey;
-    if (state.currentTab === 'cancelled' && e.cancelledAt) dateKey = new Date(e.cancelledAt).toDateString();
-    else if (state.currentTab === 'cust_pending' && e.pendingCustomerDate) dateKey = new Date(e.pendingCustomerDate).toDateString();
-    else dateKey = new Date(e.dateEntered).toDateString();
-    if (!groups[dateKey]) groups[dateKey] = [];
-    groups[dateKey].push(e);
-  });
+  
+  // Smart Grouping based on Tab
+  if (state.currentTab === 'cancelled') {
+    list.sort((a, b) => new Date(b.cancelledAt) - new Date(a.cancelledAt));
+    list.forEach(e => {
+      const dateKey = new Date(e.cancelledAt).toDateString();
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(e);
+    });
+  } else if (state.currentTab === 'snoozed') {
+    list.sort((a, b) => new Date(a.snoozedUntil) - new Date(b.snoozedUntil));
+    list.forEach(e => {
+      const dateKey = new Date(e.snoozedUntil).toDateString();
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(e);
+    });
+  } else {
+    // Live & Cust-Pending: ALL active tasks roll forward to "Today"
+    // We group them all under today's date so they appear on the current diary page.
+    list.sort((a, b) => new Date(b.dateEntered) - new Date(a.dateEntered));
+    const todayKey = new Date().toDateString();
+    groups[todayKey] = list;
+  }
+  
   return groups;
 }
 
@@ -647,17 +631,27 @@ function render() {
   document.getElementById('snoozedCount').textContent = state.entries.filter(e => !e.cancelled && e.snoozedUntil && !e.pendingCustomer).length;
   document.getElementById('cancelledCount').textContent = state.entries.filter(e => e.cancelled).length;
 
+  // Update Page Titles
+  const titles = {
+    live: { title: "Today's Diary", subtitle: "All active tasks carried forward to today" },
+    cust_pending: { title: "Pending with Customer", subtitle: "Tasks waiting on forms or actions from customers" },
+    snoozed: { title: "Snoozed Entries", subtitle: "Scheduled to return to your diary on future dates" },
+    cancelled: { title: "Archive", subtitle: "Completed tasks kept for historical record" }
+  };
+  document.getElementById('pageTitle').textContent = titles[state.currentTab].title;
+  document.getElementById('pageSubtitle').textContent = titles[state.currentTab].subtitle;
+
   const groups = getGroupedEntries();
   const dateKeys = Object.keys(groups);
   const container = document.getElementById('entriesList');
 
-  if (dateKeys.length === 0) {
+  if (dateKeys.length === 0 || groups[dateKeys[0]].length === 0) {
     let msg = 'No entries found.';
     if (state.searchQuery) msg = 'No entries match your search.';
-    else if (state.currentTab === 'live') msg = 'No live entries. Write a note above to begin.';
+    else if (state.currentTab === 'live') msg = 'No active tasks. Click the + button to add an entry.';
     else if (state.currentTab === 'cust_pending') msg = 'Nothing pending with customers.';
     else if (state.currentTab === 'snoozed') msg = 'Nothing snoozed.';
-    else if (state.currentTab === 'cancelled') msg = 'Nothing cancelled yet.';
+    else if (state.currentTab === 'cancelled') msg = 'Archive is empty.';
     container.innerHTML = `<div class="empty-state">${msg}</div>`;
     return;
   }
@@ -666,12 +660,19 @@ function render() {
   for (const dateKey of dateKeys) {
     const date = new Date(dateKey);
     const today = new Date(); today.setHours(0,0,0,0);
-    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+    const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
     let dateLabel;
     if (date.toDateString() === today.toDateString()) dateLabel = 'Today';
-    else if (date.toDateString() === yesterday.toDateString()) dateLabel = 'Yesterday';
+    else if (date.toDateString() === tomorrow.toDateString()) dateLabel = 'Tomorrow';
     else dateLabel = date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
-    html += `<div class="date-header"><span>${dateLabel}</span></div>`;
+    
+    // Hide the date header for Live/Cust-Pending since the main Page Title covers it
+    if (state.currentTab === 'live' || state.currentTab === 'cust_pending') {
+      // Skip adding the date header to keep it looking like a single diary page
+    } else {
+      html += `<div class="date-header"><span>${dateLabel}</span></div>`;
+    }
+    
     for (const e of groups[dateKey]) html += renderEntry(e);
   }
   container.innerHTML = html;
@@ -682,7 +683,6 @@ function render() {
       toggleExpand(el.dataset.entryId);
     });
   });
-  
   container.querySelectorAll('[data-action]').forEach(el => el.addEventListener('click', handleAction));
   container.querySelectorAll('[data-edit]').forEach(el => el.addEventListener('change', handleEdit));
   container.querySelectorAll('[data-cycle]').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); cycleStatus(el.dataset.cycle); }));
@@ -693,12 +693,8 @@ function render() {
       el.setAttribute('contenteditable', 'true');
       el.classList.add('editing');
       el.focus();
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      range.collapse(false);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
+      const range = document.createRange(); range.selectNodeContents(el); range.collapse(false);
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
     });
     el.addEventListener('blur', () => {
       el.removeAttribute('contenteditable');
@@ -721,7 +717,6 @@ function render() {
 }
 
 function renderEntry(e) {
-  const date = new Date(e.dateEntered);
   const isCancelled = e.cancelled, isSnoozed = !!e.snoozedUntil, isPendingCust = !!e.pendingCustomer, isNote = !e.customerId;
   let statusColor = '#6b5d48';
   if (e.status === 'Pending') statusColor = '#b8860b';
@@ -730,7 +725,7 @@ function renderEntry(e) {
 
   let badges = '';
   if (isSnoozed) badges += `<span class="tag-badge amber">◷ ${formatDateTime(new Date(e.snoozedUntil))}</span>`;
-  if (isPendingCust) badges += `<span class="tag-badge blue">◷ Cust: ${escape(e.pendingCustomerNote)}</span>`;
+  if (isPendingCust) badges += `<span class="tag-badge blue">Cust: ${escape(e.pendingCustomerNote)}</span>`;
   
   const cat = getCategoryTag(e.remarks);
   let catDot = '';
@@ -766,7 +761,7 @@ function renderEntry(e) {
   const assignedDateValue = e.assignedDate || new Date(e.dateEntered).toISOString().slice(0, 10);
 
   detailsHtml += `
-    <div class="action-row no-print">
+    <div class="action-row">
       <div class="flex flex-col gap-1"><span class="meta-label">Assigned To</span><select data-edit="assignedTo" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${assigneeOptions}</select></div>
       <div class="flex flex-col gap-1"><span class="meta-label">Date</span><input type="date" data-edit="assignedDate" data-id="${e.id}" value="${assignedDateValue}" ${isCancelled ? 'disabled' : ''}></div>
       <div class="flex flex-col gap-1"><span class="meta-label">Status</span><select data-edit="status" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${statusOptions}</select></div>
@@ -777,7 +772,7 @@ function renderEntry(e) {
   return `
     <div class="entry-block ${e.expanded ? 'expanded' : ''} ${isCancelled ? 'cancelled' : ''}" data-entry-id="${e.id}">
       <div class="entry-summary">
-        <span class="entry-date ${agingClass}">${formatTimeShort(date)}</span>
+        <span class="entry-date-stamp ${agingClass}" title="Original Entry Date">${formatDateShort(new Date(e.dateEntered))}</span>
         <div class="entry-title strike-line">${catDot} ${escape(e.name)}</div>
         <div class="entry-badges">
           ${badges}
@@ -801,7 +796,10 @@ function handleAction(ev) {
   else if (action === 'snooze') openSnoozeModal(id);
 }
 
-// ===== MODALS =====
+// ===== Modals =====
+function openEntryModal() { document.getElementById('entryModal').classList.add('show'); setTimeout(() => document.getElementById('pasteArea').focus(), 150); }
+function closeEntryModal() { document.getElementById('entryModal').classList.remove('show'); document.getElementById('pasteArea').value = ''; }
+
 let pendingSnoozeId = null;
 function openSnoozeModal(id) {
   pendingSnoozeId = id;
@@ -844,52 +842,32 @@ function confirmPendingCust() {
   moveToCustomerPending(pendingCustId, note); closePendingCustModal();
 }
 
-function openAssigneeModal() {
-  document.getElementById('newAssigneeName').value = '';
-  document.getElementById('assigneeModal').classList.add('show');
-  setTimeout(() => document.getElementById('newAssigneeName').focus(), 150);
-}
+function openAssigneeModal() { document.getElementById('newAssigneeName').value = ''; document.getElementById('assigneeModal').classList.add('show'); setTimeout(() => document.getElementById('newAssigneeName').focus(), 150); }
 function closeAssigneeModal() { document.getElementById('assigneeModal').classList.remove('show'); }
-function confirmAssignee() {
-  const name = document.getElementById('newAssigneeName').value;
-  if (addAssignee(name)) closeAssigneeModal();
-}
+function confirmAssignee() { const name = document.getElementById('newAssigneeName').value; if (addAssignee(name)) closeAssigneeModal(); }
 
 function openBackupModal() { document.getElementById('backupModal').classList.add('show'); }
 function closeBackupModal() { document.getElementById('backupModal').classList.remove('show'); }
 
-// ===== UTILITIES =====
-function escape(s) {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
-}
-function formatDate(d) {
-  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-function formatTimeShort(d) {
-  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-}
-function formatDateTime(d) {
-  return formatDate(d) + ' ' + formatTimeShort(d);
-}
+function escape(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function formatDate(d) { return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); }
+function formatDateShort(d) { return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short' }); }
+function formatTimeShort(d) { return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
+function formatDateTime(d) { return formatDate(d) + ' ' + formatTimeShort(d); }
 function showToast(msg, actionText = null, actionCallback = null) {
   const t = document.getElementById('toast');
   let html = `<span>${msg}</span>`;
-  if (actionText && actionCallback) {
-    html += `<button id="toastAction">${actionText}</button>`;
-  }
+  if (actionText && actionCallback) { html += `<button id="toastAction">${actionText}</button>`; }
   t.innerHTML = html;
   t.classList.add('show');
   clearTimeout(showToast._t);
   if (actionText && actionCallback) {
-    document.getElementById('toastAction').onclick = () => {
-      actionCallback();
-      t.classList.remove('show');
-    };
+    document.getElementById('toastAction').onclick = () => { actionCallback(); t.classList.remove('show'); };
   }
   showToast._t = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-// ===== EVENT WIRING =====
+// ===== Event Wiring =====
 document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -897,26 +875,18 @@ document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click
   render();
 }));
 
-document.getElementById('searchInput').addEventListener('input', (e) => {
-  state.searchQuery = e.target.value;
-  render();
-});
+document.getElementById('searchInput').addEventListener('input', (e) => { state.searchQuery = e.target.value; render(); });
 
-document.getElementById('parseBtn').addEventListener('click', () => {
+document.getElementById('addEntryBtn').addEventListener('click', openEntryModal);
+document.getElementById('entryCancelBtn').addEventListener('click', closeEntryModal);
+document.getElementById('entrySaveBtn').addEventListener('click', () => {
   const text = document.getElementById('pasteArea').value;
   if (!text.trim()) { showToast('Nothing to add'); return; }
   const results = parseText(text);
   if (results.length > 0) {
     addEntries(results);
-    document.getElementById('pasteArea').value = '';
     showToast(`Added ${results.length} entr${results.length === 1 ? 'y' : 'ies'}`);
-  }
-});
-
-document.getElementById('pasteArea').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-    e.preventDefault();
-    document.getElementById('parseBtn').click();
+    closeEntryModal();
   }
 });
 
@@ -924,8 +894,7 @@ document.getElementById('snoozeCancelBtn').addEventListener('click', closeSnooze
 document.getElementById('snoozeConfirmBtn').addEventListener('click', confirmSnooze);
 document.querySelectorAll('[data-snooze-preset]').forEach(btn => btn.addEventListener('click', () => {
   const hours = parseInt(btn.dataset.snoozePreset);
-  const d = new Date();
-  d.setHours(d.getHours() + hours);
+  const d = new Date(); d.setHours(d.getHours() + hours);
   if (hours === 24 || hours === 168) d.setHours(9, 0, 0, 0);
   document.getElementById('snoozeDate').value = d.toISOString().slice(0, 10);
   document.getElementById('snoozeTime').value = d.toTimeString().slice(0, 5);
@@ -947,15 +916,11 @@ document.getElementById('downloadJsonBtn').addEventListener('click', downloadJSO
 document.getElementById('uploadJsonBtn').addEventListener('click', () => document.getElementById('uploadJsonInput').click());
 document.getElementById('uploadJsonInput').addEventListener('change', (e) => { if (e.target.files.length > 0) uploadJSON(e.target.files[0]); });
 
-document.getElementById('printBtn').addEventListener('click', () => window.print());
-
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeSnoozeModal(); closePendingCustModal(); closeAssigneeModal(); closeBackupModal();
-  }
+  if (e.key === 'Escape') { closeEntryModal(); closeSnoozeModal(); closePendingCustModal(); closeAssigneeModal(); closeBackupModal(); }
 });
 
-// ===== INIT =====
+// ===== Init =====
 load();
 render();
 setInterval(() => { if (checkAndWakeUp() > 0) render(); }, 30000);
