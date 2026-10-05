@@ -73,12 +73,29 @@ body {
   align-items: center;
   gap: 12px;
 }
+
+/* Calendar Date Display */
+.date-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--rule);
+  padding-right: 12px;
+  margin-right: 4px;
+  line-height: 1.1;
+}
+.date-display .day-name { font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; }
+.date-display .date-num { font-size: 14px; color: var(--ink); font-family: 'Fraunces', serif; font-weight: 600; }
+.date-display .time-num { font-size: 10px; color: var(--accent); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+
 .tabs-row { 
   display: flex; 
   gap: 4px; 
   flex-wrap: nowrap;
   overflow-x: auto;
   scrollbar-width: none;
+  flex: 1;
 }
 .tabs-row::-webkit-scrollbar { display: none; }
 
@@ -299,6 +316,11 @@ select {
 
 <div class="diary-book">
   <header class="header-bar">
+    <div class="date-display" id="dateDisplay">
+      <div class="day-name">---</div>
+      <div class="date-num">---</div>
+      <div class="time-num">--:--</div>
+    </div>
     <div class="tabs-row">
       <button class="tab-btn active" data-tab="live">Live<span class="count" id="liveCount">0</span></button>
       <button class="tab-btn" data-tab="cust_pending">Cust-Pending<span class="count" id="pendingCustCount">0</span></button>
@@ -587,21 +609,21 @@ function getGroupedEntries() {
   const groups = {};
   
   if (state.currentTab === 'cancelled') {
-    list.sort((a, b) => new Date(b.cancelledAt) - new Date(a.cancelledAt));
+    list.sort((a, b) => new Date(a.cancelledAt) - new Date(b.cancelledAt)); // Ascending: Oldest at top
     list.forEach(e => {
       const dateKey = new Date(e.cancelledAt).toDateString();
       if (!groups[dateKey]) groups[dateKey] = [];
       groups[dateKey].push(e);
     });
   } else if (state.currentTab === 'snoozed') {
-    list.sort((a, b) => new Date(a.snoozedUntil) - new Date(b.snoozedUntil));
+    list.sort((a, b) => new Date(a.snoozedUntil) - new Date(b.snoozedUntil)); // Ascending: Earliest wake up at top
     list.forEach(e => {
       const dateKey = new Date(e.snoozedUntil).toDateString();
       if (!groups[dateKey]) groups[dateKey] = [];
       groups[dateKey].push(e);
     });
   } else {
-    list.sort((a, b) => new Date(b.dateEntered) - new Date(a.dateEntered));
+    list.sort((a, b) => new Date(a.dateEntered) - new Date(b.dateEntered)); // Ascending: Oldest at top, newest at bottom
     const todayKey = new Date().toDateString();
     groups[todayKey] = list;
   }
@@ -856,6 +878,22 @@ function showToast(msg, actionText = null, actionCallback = null) {
   showToast._t = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
+// Clock Update
+function updateClock() {
+  const now = new Date();
+  const dayName = now.toLocaleDateString('en-US', { weekday: 'short' });
+  const dateNum = now.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+  const timeNum = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  const display = document.getElementById('dateDisplay');
+  if (display) {
+    display.innerHTML = `
+      <div class="day-name">${dayName}</div>
+      <div class="date-num">${dateNum}</div>
+      <div class="time-num">${timeNum}</div>
+    `;
+  }
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -910,6 +948,8 @@ document.addEventListener('keydown', (e) => {
 
 load();
 render();
+updateClock();
+setInterval(updateClock, 1000); // Update clock every second
 setInterval(() => { if (checkAndWakeUp() > 0) render(); }, 30000);
 </script>
 </body>
