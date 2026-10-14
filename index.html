@@ -734,11 +734,9 @@ function render() {
   document.getElementById('snoozedCount').textContent = state.entries.filter(e => !e.cancelled && e.snoozedUntil && !e.pendingCustomer).length;
   document.getElementById('cancelledCount').textContent = state.entries.filter(e => e.cancelled).length;
 
-  // Update Drawer Active States
   document.querySelectorAll('.drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === state.currentTab));
   document.querySelectorAll('.drawer-sort-btn').forEach(t => t.classList.toggle('active', t.dataset.sort === state.sortOption));
 
-  // Update Page Title
   const titles = { live: 'Live', cust_pending: 'Cust-Pending', snoozed: 'Snoozed', cancelled: 'Archive' };
   document.getElementById('pageTitleDisplay').textContent = titles[state.currentTab];
 
@@ -781,9 +779,10 @@ function render() {
   }
   container.innerHTML = html;
 
+  // FIXED: Removed '.editable-text' from exclusion list so clicking the title expands the entry!
   container.querySelectorAll('.entry-block').forEach(el => {
     el.addEventListener('click', (ev) => {
-      if (ev.target.closest('button, select, input, a, .action-link, .detail-text, .editable-text, .status-pill, .delete-icon, .add-update-row, .update-log')) return;
+      if (ev.target.closest('button, select, input, a, .action-link, .detail-text, .editing, .status-pill, .delete-icon, .add-update-row, .update-log')) return;
       toggleExpand(el.dataset.entryId);
     });
   });
@@ -858,7 +857,6 @@ function renderEntry(e) {
   if (isCancelled && e.cancelledAt) detailsHtml += `<div class="text-xs text-[var(--ink-muted)] font-mono mb-4">Done ${formatDateTime(new Date(e.cancelledAt))}</div>`;
   if (isSnoozed && e.snoozeNote) detailsHtml += `<div class="text-xs text-[var(--amber)] font-mono mb-4">Reason: ${escape(e.snoozeNote)}</div>`;
 
-  // Follow-up Log
   if (e.updates && e.updates.length > 0) {
     detailsHtml += `<div class="update-log">`;
     e.updates.forEach(u => {
@@ -867,7 +865,6 @@ function renderEntry(e) {
     detailsHtml += `</div>`;
   }
 
-  // Add Update Input
   if (!isCancelled) {
     detailsHtml += `<div class="add-update-row"><input id="update-input-${e.id}" class="add-update-input" placeholder="Add follow-up note..."><button class="btn btn-primary" data-add-update="${e.id}">Add</button></div>`;
   }
@@ -999,7 +996,6 @@ function showToast(msg, actionText = null, actionCallback = null) {
   showToast._t = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-// Clock Update
 function updateClock() {
   const now = new Date();
   const dayName = now.toLocaleDateString('en-US', { weekday: 'short' });
