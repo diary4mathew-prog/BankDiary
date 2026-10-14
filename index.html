@@ -25,6 +25,10 @@
   --blue: #2e5c8a;
   --purple: #6b3c8a;
   --margin-line: #d99a9a;
+  --urgent: #8b2635;
+  --high: #d97706;
+  --medium: #2e5c8a;
+  --low: #9a8b72;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
@@ -47,7 +51,6 @@ body {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0.03 0'/></filter><rect width='200' height='200' filter='url(%23p)'/></svg>");
   position: relative;
 }
-/* Minimal Left Red Margin Line */
 .diary-book::before {
   content: '';
   position: absolute;
@@ -74,7 +77,6 @@ body {
   gap: 12px;
 }
 
-/* Calendar Date Display */
 .date-display {
   display: flex;
   flex-direction: column;
@@ -136,6 +138,16 @@ body {
 }
 .search-input:focus { border-bottom-color: var(--accent); border-bottom-style: solid; width: 150px; }
 
+.sort-select {
+  font-family: 'Fraunces', serif; font-size: 12px; border: none; background: transparent;
+  color: var(--ink-soft); cursor: pointer; border-bottom: 1px dashed var(--ink-muted);
+  padding: 4px 16px 4px 0; outline: none; transition: border-color 0.2s;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2 3l3 3 3-3' stroke='%236b5d48' fill='none' stroke-width='1'/></svg>");
+  background-repeat: no-repeat; background-position: right center;
+}
+.sort-select:focus { border-bottom-color: var(--accent); border-bottom-style: solid; }
+
 /* --- Diary Content --- */
 .page-content { padding: 8px 16px 80px 24px; }
 
@@ -144,16 +156,39 @@ body {
   cursor: pointer;
   transition: background 0.2s ease;
   border-radius: 4px;
+  border-left: 3px solid transparent;
+  padding-left: 8px;
+  margin-left: -8px;
 }
 .entry-block:hover { background: rgba(212, 196, 163, 0.15); }
 .entry-block.expanded { background: rgba(247, 241, 227, 0.6); }
+
+/* Priority Colors */
+.entry-block.prio-urgent { border-left-color: var(--urgent); }
+.entry-block.prio-high { border-left-color: var(--high); }
+.entry-block.prio-medium { border-left-color: var(--medium); }
+.entry-block.prio-low { border-left-color: var(--low); }
+
+/* Escalation */
+.entry-block.escalated {
+  background: rgba(139, 38, 53, 0.08);
+  border: 1px solid var(--accent);
+  border-left: 4px solid var(--accent);
+  padding-left: 7px;
+  box-shadow: 0 0 8px rgba(139, 38, 53, 0.2);
+  animation: pulse-border 2.5s infinite;
+}
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 8px rgba(139, 38, 53, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(139, 38, 53, 0.4); }
+}
 
 .entry-summary {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 36px; /* Exact height of a diary line */
-  border-bottom: 1px solid var(--rule-soft); /* The diary line itself */
+  height: 36px;
+  border-bottom: 1px solid var(--rule-soft);
   overflow: hidden;
 }
 .entry-block.expanded .entry-summary {
@@ -191,9 +226,12 @@ body {
   gap: 8px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Truncates long text gracefully */
-  min-width: 0; /* Crucial for flex truncation */
+  text-overflow: ellipsis;
+  min-width: 0;
 }
+.editable-text { cursor: text; border-radius: 4px; padding: 2px 4px; margin: -2px -4px; }
+.editable-text:hover { background: rgba(212, 196, 163, 0.2); }
+.editable-text.editing { background: var(--paper-2); box-shadow: 0 0 0 1px var(--rule); outline: none; }
 
 .entry-badges { 
   display: flex; 
@@ -254,7 +292,7 @@ select {
 .status-pill:hover { transform: scale(1.05); }
 .status-pill::before { content: ''; width: 4px; height: 4px; background: currentColor; border-radius: 50%; }
 
-.cat-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.escalated-badge { background: var(--accent); color: var(--paper); font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
 
 .tag-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 3px; background: var(--rule-soft); color: var(--ink-2); }
 .tag-badge.blue { background: rgba(46, 92, 138, 0.15); color: var(--blue); }
@@ -281,24 +319,11 @@ select {
 .btn-ghost { border-color: transparent; }
 .btn-ghost:hover { background: rgba(212, 196, 163, 0.3); border-color: transparent; color: var(--ink); }
 
-/* Floating Action Button */
 .fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 48px;
-  height: 48px;
-  background: var(--accent);
-  color: var(--paper);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 4px 12px rgba(139, 38, 53, 0.4);
-  cursor: pointer;
-  border: none;
-  z-index: 40;
+  position: fixed; bottom: 24px; right: 24px; width: 48px; height: 48px;
+  background: var(--accent); color: var(--paper); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+  box-shadow: 0 4px 12px rgba(139, 38, 53, 0.4); cursor: pointer; border: none; z-index: 40;
   transition: transform 0.2s, background 0.2s;
 }
 .fab:hover { transform: scale(1.1); background: var(--ink); }
@@ -328,6 +353,11 @@ select {
       <button class="tab-btn" data-tab="cancelled">Archive<span class="count" id="cancelledCount">0</span></button>
     </div>
     <div class="header-actions">
+      <select id="sortSelect" class="sort-select">
+        <option value="date">Sort by Date</option>
+        <option value="assignee">Sort by Assignee</option>
+        <option value="title">Sort by Title</option>
+      </select>
       <input id="searchInput" class="search-input hidden md:block" placeholder="Search...">
       <button id="backupBtn" class="icon-btn" title="Backup & Restore">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
@@ -404,6 +434,10 @@ select {
         <button id="emailBackupBtn" class="btn btn-primary w-full">Email & Clear Archive</button>
       </div>
       <div class="border-t border-dashed border-[var(--rule)] pt-4">
+        <p class="text-sm text-[var(--ink-soft)] mb-2">Send ALL entries (Live, Snoozed, Archive) as a text file to your email.</p>
+        <button id="emailAllBtn" class="btn w-full" style="background: var(--blue); color: white; border-color: var(--blue);">Email ALL Entries (Text)</button>
+      </div>
+      <div class="border-t border-dashed border-[var(--rule)] pt-4">
         <p class="text-sm text-[var(--ink-soft)] mb-2">Download a full backup file of your entire diary to your device.</p>
         <button id="downloadJsonBtn" class="btn w-full">Download Full Backup (.json)</button>
       </div>
@@ -420,19 +454,25 @@ select {
 <div class="toast" id="toast"></div>
 
 <script>
-let state = { entries: [], assignees: ['Unassigned'], currentTab: 'live', searchQuery: '' };
+let state = { entries: [], assignees: ['Unassigned'], currentTab: 'live', searchQuery: '', sortOption: 'date' };
 let recentlyDeleted = null;
 const STATUSES = ['Pending', 'In Progress', 'Follow-up', 'Awaiting Docs', 'Resolved', 'Escalated'];
+const PRIORITIES = ['Low', 'Medium', 'High', 'Urgent'];
 
-function save() { localStorage.setItem('branch_diary_diary_v6', JSON.stringify(state)); }
+function save() { localStorage.setItem('branch_diary_diary_v7', JSON.stringify(state)); }
 function load() {
   try {
-    const raw = localStorage.getItem('branch_diary_diary_v6');
+    const raw = localStorage.getItem('branch_diary_diary_v7');
     if (raw) {
       const data = JSON.parse(raw); state = { ...state, ...data };
       if (!state.assignees || state.assignees.length === 0) state.assignees = ['Unassigned'];
       if (!state.assignees.includes('Unassigned')) state.assignees.unshift('Unassigned');
       if (!state.entries) state.entries = [];
+      // Ensure new fields exist
+      state.entries.forEach(e => {
+        if (e.escalated === undefined) e.escalated = false;
+        if (e.priority === undefined) e.priority = 'Medium';
+      });
     } else { addSampleData(); }
   } catch (e) { console.warn('Load failed', e); }
 }
@@ -440,10 +480,10 @@ function load() {
 function addSampleData() {
   const now = Date.now();
   state.entries = [
-    { id: 'e1', customerId: '1042', accountNumber: '452110', name: 'Rajesh Kumar', phoneNumber: '9876543210', remarks: 'KYC documents pending - customer to submit address proof', dateEntered: new Date(now - 3600000).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 3600000).toISOString().slice(0, 10), status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
-    { id: 'e2', customerId: '', accountNumber: '', name: 'Discussed the new loan policy...', phoneNumber: '', remarks: 'Discussed the new loan policy with the regional manager. Need to update the team by next week.', dateEntered: new Date(now - 86400000 * 2).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 2).toISOString().slice(0, 10), status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
-    { id: 'e3', customerId: '2078', accountNumber: '771032', name: 'Sunita Devi', phoneNumber: '9811022334', remarks: 'Cheque clearance pending - branch visit required', dateEntered: new Date(now - 86400000 * 1).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 1).toISOString().slice(0, 10), status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: true, pendingCustomerDate: new Date(now - 3600000 * 5).toISOString(), pendingCustomerNote: 'Signed Form 60', expanded: false },
-    { id: 'e4', customerId: '6789', accountNumber: '554433', name: 'Amit Patel', phoneNumber: '9988776655', remarks: 'Home loan inquiry - sent interest rate details', dateEntered: new Date(now - 86400000 * 3).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 3).toISOString().slice(0, 10), status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true, cancelledAt: new Date(now - 86400000 * 1).toISOString(), pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false },
+    { id: 'e1', customerId: '1042', accountNumber: '452110', name: 'Rajesh Kumar', phoneNumber: '9876543210', remarks: 'KYC documents pending - customer to submit address proof', dateEntered: new Date(now - 3600000).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 3600000).toISOString().slice(0, 10), status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false, escalated: false, priority: 'High' },
+    { id: 'e2', customerId: '', accountNumber: '', name: 'Discussed the new loan policy...', phoneNumber: '', remarks: 'Discussed the new loan policy with the regional manager. Need to update the team by next week.', dateEntered: new Date(now - 86400000 * 2).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 2).toISOString().slice(0, 10), status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false, escalated: false, priority: 'Medium' },
+    { id: 'e3', customerId: '2078', accountNumber: '771032', name: 'Sunita Devi', phoneNumber: '9811022334', remarks: 'Cheque clearance pending - branch visit required', dateEntered: new Date(now - 86400000 * 1).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 1).toISOString().slice(0, 10), status: 'In Progress', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null, pendingCustomer: true, pendingCustomerDate: new Date(now - 3600000 * 5).toISOString(), pendingCustomerNote: 'Signed Form 60', expanded: false, escalated: true, priority: 'Urgent' },
+    { id: 'e4', customerId: '6789', accountNumber: '554433', name: 'Amit Patel', phoneNumber: '9988776655', remarks: 'Home loan inquiry - sent interest rate details', dateEntered: new Date(now - 86400000 * 3).toISOString(), assignedTo: 'Unassigned', assignedDate: new Date(now - 86400000 * 3).toISOString().slice(0, 10), status: 'Resolved', snoozedUntil: null, snoozeNote: '', cancelled: true, cancelledAt: new Date(now - 86400000 * 1).toISOString(), pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false, escalated: false, priority: 'Low' },
   ];
   save();
 }
@@ -488,7 +528,8 @@ function addEntries(parsedList) {
       id: 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8), ...p,
       dateEntered: now.toISOString(), assignedTo: 'Unassigned', assignedDate: todayStr,
       status: 'Pending', snoozedUntil: null, snoozeNote: '', cancelled: false, cancelledAt: null,
-      pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false
+      pendingCustomer: false, pendingCustomerDate: null, pendingCustomerNote: '', expanded: false,
+      escalated: false, priority: 'Medium'
     });
   }
   save(); render();
@@ -511,6 +552,11 @@ function cycleStatus(id) {
   save(); render();
 }
 
+function toggleEscalate(id) {
+  const e = state.entries.find(x => x.id === id);
+  if (e) { e.escalated = !e.escalated; save(); render(); showToast(e.escalated ? 'Item Escalated' : 'Item De-escalated'); }
+}
+
 function deleteEntry(id) {
   const index = state.entries.findIndex(x => x.id === id);
   if (index !== -1) {
@@ -526,6 +572,25 @@ function wakeEntry(id) { const e = state.entries.find(x => x.id === id); if (e) 
 function snoozeEntry(id, until, note) { const e = state.entries.find(x => x.id === id); if (e) { e.snoozedUntil = until.toISOString(); e.snoozeNote = note; e.pendingCustomer = false; save(); render(); showToast('Snoozed until ' + formatDateTime(until)); } }
 function moveToCustomerPending(id, note) { const e = state.entries.find(x => x.id === id); if (e) { e.pendingCustomer = true; e.pendingCustomerDate = new Date().toISOString(); e.pendingCustomerNote = note; e.snoozedUntil = null; save(); render(); showToast('Moved to Cust-Pending'); } }
 function restoreFromCustomerPending(id) { const e = state.entries.find(x => x.id === id); if (e) { e.pendingCustomer = false; e.pendingCustomerNote = ''; save(); render(); showToast('Followed up — returned to Live'); } }
+
+function updateName(id, newName) {
+  const e = state.entries.find(x => x.id === id);
+  if (e && e.name !== newName) { e.name = newName; save(); showToast('Name updated'); }
+}
+
+function updateRemarks(id, newRemarks) {
+  const e = state.entries.find(x => x.id === id);
+  if (e && e.remarks !== newRemarks) {
+    e.remarks = newRemarks;
+    if (!e.customerId) {
+      const words = newRemarks.split(/\s+/);
+      let title = words.slice(0, 5).join(' ');
+      if (words.length > 5) title += '...';
+      e.name = title;
+    }
+    save(); showToast('Remarks updated');
+  }
+}
 
 function handleEdit(ev) {
   ev.stopPropagation();
@@ -555,6 +620,28 @@ function sendEmailBackup(silent = false) {
   let body = `BRANCH DIARY BACKUP - ${formatDate(new Date())}\n\n`;
   cancelled.forEach((e, i) => { body += `${i + 1}. ${e.name.toUpperCase()}\n`; if (e.customerId) body += `   ID: ${e.customerId} | Acct: ${e.accountNumber} | Ph: ${e.phoneNumber}\n`; body += `   Remarks: ${e.remarks || 'N/A'}\n   Done: ${formatDateTime(new Date(e.cancelledAt))}\n\n`; });
   const a = document.createElement('a'); a.href = `mailto:?subject=${encodeURIComponent('Branch Diary Backup')}&body=${encodeURIComponent(body)}`; a.style.display = 'none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function emailAllEntries() {
+  if (state.entries.length === 0) { showToast('No entries to email.'); return; }
+  let body = `BRANCH DIARY FULL EXPORT - ${formatDate(new Date())}\n\n`;
+  const tabs = { live: 'LIVE', cust_pending: 'CUST-PENDING', snoozed: 'SNOOZED', cancelled: 'ARCHIVE' };
+  for (const [tab, label] of Object.entries(tabs)) {
+    const list = state.entries.filter(e => isVisible(e, tab));
+    if (list.length > 0) {
+      body += `--- ${label} ---\n`;
+      list.forEach(e => {
+        body += `Name: ${e.name}\n`;
+        if (e.customerId) body += `ID: ${e.customerId} | Acct: ${e.accountNumber} | Ph: ${e.phoneNumber}\n`;
+        body += `Remarks: ${e.remarks || 'N/A'}\n`;
+        body += `Assigned: ${e.assignedTo} | Status: ${e.status} | Priority: ${e.priority}\n`;
+        if (e.snoozedUntil) body += `Snoozed until: ${formatDateTime(new Date(e.snoozedUntil))}\n`;
+        if (e.pendingCustomer) body += `Pending Customer: ${e.pendingCustomerNote}\n`;
+        body += `\n`;
+      });
+    }
+  }
+  const a = document.createElement('a'); a.href = `mailto:?subject=${encodeURIComponent('Branch Diary Full Export')}&body=${encodeURIComponent(body)}`; a.style.display = 'none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
 function downloadJSON() {
@@ -606,26 +693,51 @@ function getGroupedEntries() {
     list = list.filter(e => e.name.toLowerCase().includes(q) || e.customerId.includes(q) || e.accountNumber.includes(q) || e.phoneNumber.includes(q) || (e.remarks || '').toLowerCase().includes(q));
   }
 
+  // Sorting
+  if (state.sortOption === 'assignee') {
+    list.sort((a, b) => a.assignedTo.localeCompare(b.assignedTo) || new Date(a.dateEntered) - new Date(b.dateEntered));
+  } else if (state.sortOption === 'title') {
+    list.sort((a, b) => a.name.localeCompare(b.name) || new Date(a.dateEntered) - new Date(b.dateEntered));
+  } else {
+    // Date
+    if (state.currentTab === 'cancelled') list.sort((a, b) => a.cancelledAt - b.cancelledAt);
+    else if (state.currentTab === 'snoozed') list.sort((a, b) => a.snoozedUntil - b.snoozedUntil);
+    else list.sort((a, b) => a.dateEntered - b.dateEntered);
+  }
+
   const groups = {};
   
-  if (state.currentTab === 'cancelled') {
-    list.sort((a, b) => new Date(a.cancelledAt) - new Date(b.cancelledAt)); // Ascending: Oldest at top
-    list.forEach(e => {
-      const dateKey = new Date(e.cancelledAt).toDateString();
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(e);
-    });
-  } else if (state.currentTab === 'snoozed') {
-    list.sort((a, b) => new Date(a.snoozedUntil) - new Date(b.snoozedUntil)); // Ascending: Earliest wake up at top
-    list.forEach(e => {
-      const dateKey = new Date(e.snoozedUntil).toDateString();
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(e);
-    });
+  if (state.sortOption === 'date') {
+    if (state.currentTab === 'cancelled') {
+      list.forEach(e => {
+        const dateKey = new Date(e.cancelledAt).toDateString();
+        if (!groups[dateKey]) groups[dateKey] = [];
+        groups[dateKey].push(e);
+      });
+    } else if (state.currentTab === 'snoozed') {
+      list.forEach(e => {
+        const dateKey = new Date(e.snoozedUntil).toDateString();
+        if (!groups[dateKey]) groups[dateKey] = [];
+        groups[dateKey].push(e);
+      });
+    } else {
+      const todayKey = new Date().toDateString();
+      groups[todayKey] = list;
+    }
   } else {
-    list.sort((a, b) => new Date(a.dateEntered) - new Date(b.dateEntered)); // Ascending: Oldest at top, newest at bottom
-    const todayKey = new Date().toDateString();
-    groups[todayKey] = list;
+    // Group by Assignee or Title letter
+    let prevKey = '';
+    list.forEach(e => {
+      let key;
+      if (state.sortOption === 'assignee') key = e.assignedTo;
+      else if (state.sortOption === 'title') key = e.name.charAt(0).toUpperCase();
+      
+      if (key !== prevKey) {
+        groups[key] = [];
+        prevKey = key;
+      }
+      groups[key].push(e);
+    });
   }
   return groups;
 }
@@ -671,18 +783,22 @@ function render() {
 
   let html = '';
   for (const dateKey of dateKeys) {
-    const date = new Date(dateKey);
-    const today = new Date(); today.setHours(0,0,0,0);
-    const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-    let dateLabel;
-    if (date.toDateString() === today.toDateString()) dateLabel = 'Today';
-    else if (date.toDateString() === tomorrow.toDateString()) dateLabel = 'Tomorrow';
-    else dateLabel = date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
-    
-    if (state.currentTab === 'live' || state.currentTab === 'cust_pending') {
-      // Skip adding the date header to keep it looking like a single diary page
+    if (state.sortOption === 'date') {
+      const date = new Date(dateKey);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+      let dateLabel;
+      if (date.toDateString() === today.toDateString()) dateLabel = 'Today';
+      else if (date.toDateString() === tomorrow.toDateString()) dateLabel = 'Tomorrow';
+      else dateLabel = date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+      
+      if (state.currentTab === 'live' || state.currentTab === 'cust_pending') {
+        // skip
+      } else {
+        html += `<div class="font-display text-xs font-semibold text-[var(--ink-muted)] uppercase tracking-widest mt-4 mb-2 pb-1 border-b border-[var(--rule)]">${dateLabel}</div>`;
+      }
     } else {
-      html += `<div class="font-display text-xs font-semibold text-[var(--ink-muted)] uppercase tracking-widest mt-4 mb-2 pb-1 border-b border-[var(--rule)]">${dateLabel}</div>`;
+      html += `<div class="font-display text-xs font-semibold text-[var(--ink-muted)] uppercase tracking-widest mt-4 mb-2 pb-1 border-b border-[var(--rule)]">${dateKey}</div>`;
     }
     
     for (const e of groups[dateKey]) html += renderEntry(e);
@@ -691,7 +807,7 @@ function render() {
 
   container.querySelectorAll('.entry-block').forEach(el => {
     el.addEventListener('click', (ev) => {
-      if (ev.target.closest('button, select, input, a, .action-link, .detail-text, .status-pill, .delete-icon')) return;
+      if (ev.target.closest('button, select, input, a, .action-link, .detail-text, .editable-text, .status-pill, .delete-icon')) return;
       toggleExpand(el.dataset.entryId);
     });
   });
@@ -699,9 +815,12 @@ function render() {
   container.querySelectorAll('[data-edit]').forEach(el => el.addEventListener('change', handleEdit));
   container.querySelectorAll('[data-cycle]').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); cycleStatus(el.dataset.cycle); }));
   container.querySelectorAll('[data-delete]').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); deleteEntry(el.dataset.delete); }));
+  container.querySelectorAll('[data-escalate]').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); toggleEscalate(el.dataset.escalate); }));
   
-  container.querySelectorAll('.detail-text').forEach(el => {
-    el.addEventListener('dblclick', () => {
+  // Editable Text logic (Title and Remarks)
+  container.querySelectorAll('.editable-text').forEach(el => {
+    el.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
       el.setAttribute('contenteditable', 'true');
       el.classList.add('editing');
       el.focus();
@@ -712,17 +831,16 @@ function render() {
       el.removeAttribute('contenteditable');
       el.classList.remove('editing');
       const id = el.dataset.entryId;
-      const newRemarks = el.innerText.trim();
-      const e = state.entries.find(x => x.id === id);
-      if (e && e.remarks !== newRemarks) {
-        e.remarks = newRemarks;
-        if (!e.customerId) {
-          const words = newRemarks.split(/\s+/);
-          let title = words.slice(0, 5).join(' ');
-          if (words.length > 5) title += '...';
-          e.name = title;
-        }
-        save(); showToast('Details updated'); render();
+      const field = el.dataset.field;
+      const newValue = el.innerText.trim();
+      if (field === 'name') updateName(id, newValue);
+      else if (field === 'remarks') updateRemarks(id, newValue);
+      render();
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        el.blur();
       }
     });
   });
@@ -736,8 +854,9 @@ function renderEntry(e) {
   else if (e.status === 'Escalated') statusColor = '#8b2635';
 
   let badges = '';
-  if (isSnoozed) badges += `<span class="tag-badge amber">◷ ${formatDateTime(new Date(e.snoozedUntil))}</span>`;
+  if (isSnoozed) badges += `<span class="tag-badge amber">Snoozed: ${formatDateTime(new Date(e.snoozedUntil))}</span>`;
   if (isPendingCust) badges += `<span class="tag-badge blue">Cust: ${escape(e.pendingCustomerNote)}</span>`;
+  if (e.escalated) badges += `<span class="escalated-badge">Escalated</span>`;
   
   const cat = getCategoryTag(e.remarks);
   let catDot = '';
@@ -759,17 +878,19 @@ function renderEntry(e) {
     }
     detailsHtml += `</div>`;
   }
-  detailsHtml += `<div class="detail-text strike-line" data-entry-id="${e.id}" title="Double-click to edit">${escape(e.remarks)}</div>`;
+  detailsHtml += `<div class="detail-text strike-line editable-text" data-entry-id="${e.id}" data-field="remarks" title="Double-click to edit">${escape(e.remarks)}</div>`;
   if (isCancelled && e.cancelledAt) detailsHtml += `<div class="text-xs text-[var(--ink-muted)] font-mono mb-4">Done ${formatDateTime(new Date(e.cancelledAt))}</div>`;
+  if (isSnoozed && e.snoozeNote) detailsHtml += `<div class="text-xs text-[var(--amber)] font-mono mb-4">Reason: ${escape(e.snoozeNote)}</div>`;
 
   let actions = '';
   if (isCancelled) actions = `<a class="action-link" data-action="restore" data-id="${e.id}">Restore</a>`;
   else if (isPendingCust) actions = `<a class="action-link blue" data-action="restore_cust" data-id="${e.id}">Follow Up (Move to Live)</a><a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
   else if (isSnoozed) actions = `<a class="action-link" data-action="wake" data-id="${e.id}">Wake Now</a><a class="action-link blue" data-action="cust_pending" data-id="${e.id}">Cust-Pending</a><a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
-  else actions = `<a class="action-link" data-action="snooze" data-id="${e.id}">Snooze</a><a class="action-link blue" data-action="cust_pending" data-id="${e.id}">Cust-Pending</a><a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
+  else actions = `<a class="action-link ${e.escalated ? 'danger' : ''}" data-action="escalate" data-id="${e.id}">${e.escalated ? 'De-escalate' : 'Escalate'}</a><a class="action-link" data-action="snooze" data-id="${e.id}">Snooze</a><a class="action-link blue" data-action="cust_pending" data-id="${e.id}">Cust-Pending</a><a class="action-link danger" data-action="cancel" data-id="${e.id}">Mark Done</a>`;
 
   const assigneeOptions = state.assignees.map(a => `<option value="${escape(a)}" ${e.assignedTo === a ? 'selected' : ''}>${escape(a)}</option>`).join('');
   const statusOptions = STATUSES.map(s => `<option value="${s}" ${e.status === s ? 'selected' : ''}>${s}</option>`).join('');
+  const priorityOptions = PRIORITIES.map(p => `<option value="${p}" ${e.priority === p ? 'selected' : ''}>${p}</option>`).join('');
   const assignedDateValue = e.assignedDate || new Date(e.dateEntered).toISOString().slice(0, 10);
 
   detailsHtml += `
@@ -777,15 +898,21 @@ function renderEntry(e) {
       <div class="flex flex-col gap-1"><span class="meta-label">Assigned To</span><select data-edit="assignedTo" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${assigneeOptions}</select></div>
       <div class="flex flex-col gap-1"><span class="meta-label">Date</span><input type="date" data-edit="assignedDate" data-id="${e.id}" value="${assignedDateValue}" ${isCancelled ? 'disabled' : ''}></div>
       <div class="flex flex-col gap-1"><span class="meta-label">Status</span><select data-edit="status" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${statusOptions}</select></div>
+      <div class="flex flex-col gap-1"><span class="meta-label">Priority</span><select data-edit="priority" data-id="${e.id}" ${isCancelled ? 'disabled' : ''}>${priorityOptions}</select></div>
       <div class="flex-1"></div><div class="flex gap-4 items-center">${actions}</div>
     </div>
   `;
 
+  const prioClass = `prio-${e.priority.toLowerCase()}`;
+
   return `
-    <div class="entry-block ${e.expanded ? 'expanded' : ''} ${isCancelled ? 'cancelled' : ''}" data-entry-id="${e.id}">
+    <div class="entry-block ${e.expanded ? 'expanded' : ''} ${isCancelled ? 'cancelled' : ''} ${e.escalated ? 'escalated' : ''} ${prioClass}" data-entry-id="${e.id}">
       <div class="entry-summary">
         <span class="entry-date-stamp ${agingClass}" title="Original Entry Date">${formatDateShort(new Date(e.dateEntered))}</span>
-        <div class="entry-title strike-line">${catDot} ${escape(e.name)}</div>
+        <div class="entry-title strike-line">
+          ${catDot} 
+          <span class="editable-text" data-entry-id="${e.id}" data-field="name" title="Double-click to edit">${escape(e.name)}</span>
+        </div>
         <div class="entry-badges">
           ${badges}
           <span class="status-pill" data-cycle="${e.id}" style="color: ${statusColor}" title="Click to change status">${escape(e.status)}</span>
@@ -806,6 +933,7 @@ function handleAction(ev) {
   else if (action === 'wake') wakeEntry(id);
   else if (action === 'cust_pending') openPendingCustModal(id);
   else if (action === 'snooze') openSnoozeModal(id);
+  else if (action === 'escalate') toggleEscalate(id);
 }
 
 function openEntryModal() { document.getElementById('entryModal').classList.add('show'); setTimeout(() => document.getElementById('pasteArea').focus(), 150); }
@@ -902,6 +1030,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click
 }));
 
 document.getElementById('searchInput').addEventListener('input', (e) => { state.searchQuery = e.target.value; render(); });
+document.getElementById('sortSelect').addEventListener('change', (e) => { state.sortOption = e.target.value; render(); });
 
 document.getElementById('addEntryBtn').addEventListener('click', openEntryModal);
 document.getElementById('entryCancelBtn').addEventListener('click', closeEntryModal);
@@ -938,6 +1067,7 @@ document.getElementById('newAssigneeName').addEventListener('keydown', (e) => { 
 document.getElementById('backupBtn').addEventListener('click', openBackupModal);
 document.getElementById('backupCloseBtn').addEventListener('click', closeBackupModal);
 document.getElementById('emailBackupBtn').addEventListener('click', () => clearCancelledEntries());
+document.getElementById('emailAllBtn').addEventListener('click', () => emailAllEntries());
 document.getElementById('downloadJsonBtn').addEventListener('click', downloadJSON);
 document.getElementById('uploadJsonBtn').addEventListener('click', () => document.getElementById('uploadJsonInput').click());
 document.getElementById('uploadJsonInput').addEventListener('change', (e) => { if (e.target.files.length > 0) uploadJSON(e.target.files[0]); });
@@ -949,7 +1079,7 @@ document.addEventListener('keydown', (e) => {
 load();
 render();
 updateClock();
-setInterval(updateClock, 1000); // Update clock every second
+setInterval(updateClock, 1000);
 setInterval(() => { if (checkAndWakeUp() > 0) render(); }, 30000);
 </script>
 </body>
